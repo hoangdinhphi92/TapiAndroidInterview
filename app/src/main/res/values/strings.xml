@@ -2,4 +2,6 @@
     <string name="app_name">TapiAndroidExample</string>
     <string name="detail_transition_name">detail_fragment</string>
     <string name="photo_item_transition_name">photo_item_$1%s</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

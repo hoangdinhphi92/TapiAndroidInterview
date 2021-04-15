@@ -1,20 +1,31 @@
 package com.tapi.android.example.data
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import com.google.gson.annotations.SerializedName
 
-@Parcelize
 data class Photo(
-    val id: String,
-    val description: String,
-    val urls: PhotoUrls
+
+    @SerializedName("id") val id: String,
+    @SerializedName("description") val description: String,
+    @SerializedName("urls") val photoUrls: PhotoUrls
 )
 
-@Parcelize
 data class PhotoUrls(
+    @SerializedName("raw")
     val raw: String,
+
+    @SerializedName("full")
     val full: String,
+
+    @SerializedName("regular")
     val regular: String,
+
+    @SerializedName("small")
     val small: String,
+
+    @SerializedName("thumb")
     val thumb: String
-)
+) {
+    override fun toString(): String {
+        return "Picture(raw='$raw', full='$full', regular='$regular', small='$small', thumb='$thumb')"
+    }
+}
