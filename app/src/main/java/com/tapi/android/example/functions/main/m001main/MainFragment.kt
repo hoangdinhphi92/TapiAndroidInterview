@@ -1,6 +1,5 @@
 package com.tapi.android.example.functions.main.m001main
 
-import android.app.Activity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -75,12 +74,6 @@ class MainFragment : Fragment() {
                         if ((visibleItemCount + passVisibleItem) > total) {
                             Log.d("TAG", "onScrolled: ")
                             mainModel.loadMore()
-                            /* if (!CommonUtils.isNetworkConnected(activity as Activity)) {
-                                showToast("internet error")
-                                return
-                            }
-
-                            var i = mainModel.loadMore()*/
                         }
                 }
             }
