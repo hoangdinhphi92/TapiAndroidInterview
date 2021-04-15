@@ -14,14 +14,14 @@ class MainModel : ViewModel() {
 
     private var _imagesData: MutableLiveData<List<Photo>> = MutableLiveData()
     val imagesData: LiveData<List<Photo>> get() = _imagesData
-    private var currentPage = 1
+    private var currentPerPage = 10
 
     private var _loading = MutableLiveData<Int>()
     val loading: LiveData<Int>
         get() = _loading
 
     suspend fun queryPhotos(): LiveData<List<Photo>> {
-        val data = APIService.retrofit.queryPhotos(page = currentPage)
+        val data = APIService.retrofit.queryPhotos(perPage = currentPerPage)
         _loading.value = 0
 
         data.body()?.let {
@@ -34,17 +34,17 @@ class MainModel : ViewModel() {
 
 
     fun loadMore(): Int {
-        currentPage++
+        currentPerPage+=10
 
         val handler = CoroutineExceptionHandler { _, exception ->
             _loading.value = -1
             Log.d("TAG", "CoroutineExceptionHandler got $exception")
         }
         viewModelScope.launch(handler) {
-            callGetPhotoToLoadMore(currentPage)
+            callGetPhotoToLoadMore(currentPerPage)
         }
 
-        return currentPage
+        return currentPerPage
     }
 
     private suspend fun callGetPhotoToLoadMore(currentPage: Int): LiveData<List<Photo>> {
