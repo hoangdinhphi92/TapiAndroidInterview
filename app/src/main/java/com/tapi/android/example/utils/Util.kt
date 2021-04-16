@@ -1,12 +1,17 @@
 package com.tapi.android.example.utils
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
+import androidx.annotation.AttrRes
+import androidx.annotation.ColorInt
+import androidx.core.content.res.use
 import androidx.navigation.NavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -17,6 +22,18 @@ class Util {
         val APPLICATION_ID = "6fa91622109e859b1c40218a5dead99f7262cf4f698b1e2cb89dd18fc5824d15"
     }
 
+}
+
+@ColorInt
+@SuppressLint("Recycle")
+fun Context.themeColor(
+    @AttrRes themeAttrId: Int
+): Int {
+    return obtainStyledAttributes(
+        intArrayOf(themeAttrId)
+    ).use {
+        it.getColor(0, Color.MAGENTA)
+    }
 }
 
 fun View.getLayoutInflate(): LayoutInflater {
@@ -68,3 +85,4 @@ fun Context.isInternetAvailable(): Boolean {
 fun NavController.checkTopScreenWithID(id: Int): Boolean {
     return this.currentBackStackEntry?.destination?.id == id
 }
+

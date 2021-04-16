@@ -1,44 +1,49 @@
 package com.tapi.android.example.screens.result.adapter
 
 import android.content.Context
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.tapi.android.example.data.PhotoViewItem
 import com.tapi.android.example.databinding.ItemPhotoBinding
-import com.tapi.android.example.screens.result.ResultViewModel
 import com.tapi.android.example.utils.getLayoutInflate
 import com.tapi.android.example.utils.load
 
 class PhotoViewHolder(
     private val viewBinding: ItemPhotoBinding,
-    private val viewModel: ResultViewModel,
+    private val listener: OnClickItemListener,
     private val context: Context
 ) :
     RecyclerView.ViewHolder(viewBinding.root) {
 
-    fun build(photoItem: PhotoViewItem) {
-        setOnClick(photoItem)
-        viewBinding.photoImg.load(photoItem.photo.urls.thumb)
+    fun build(data: PhotoViewItem.PhotoItem) = with(viewBinding){
+        init(data)
+
+        photoItem = data
+        photoImg.load(data.photo.urls.thumb)
     }
 
-    private fun setOnClick(photo: PhotoViewItem){
+    private fun init(data: PhotoViewItem.PhotoItem){
         viewBinding.photoImg.setOnClickListener {
-            viewModel.onClickItem(photo)
+            listener.onSelected(it, data.photo.urls.thumb)
         }
     }
 
     companion object {
         fun create(
             parent: ViewGroup,
-            viewModel: ResultViewModel,
-            context: Context
+            listener: OnClickItemListener, context: Context
         ): PhotoViewHolder {
             return PhotoViewHolder(
                 ItemPhotoBinding.inflate(
                     parent.getLayoutInflate(), parent, false
-                ), viewModel, context
+                ), listener, context
             )
         }
     }
+}
 
+
+interface OnClickItemListener{
+    fun onSelected(view: View, urlThumb : String)
 }

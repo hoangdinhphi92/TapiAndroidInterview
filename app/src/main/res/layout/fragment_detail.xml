@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".screens.result.ResultFragment"
+        android:transitionName="@string/detail_transition_name">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/picture_img"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#AC2E2E"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/back_img"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:scaleType="centerInside"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:src="@drawable/common_main_back_white_icon"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

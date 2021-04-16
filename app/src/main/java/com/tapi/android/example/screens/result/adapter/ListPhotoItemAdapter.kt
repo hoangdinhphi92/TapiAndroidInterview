@@ -7,13 +7,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.tapi.android.example.data.PhotoViewItem
 import com.tapi.android.example.screens.result.ResultViewModel
 
-const val PHOTO_TYPE = 111
-const val LOAD_MORE_TYPE = 112
+const val PHOTO_TYPE = 0
+const val LOAD_MORE_TYPE = 1
 
-class ListPhotoItemAdapter(private val viewModel: ResultViewModel): ListAdapter<PhotoViewItem, RecyclerView.ViewHolder>(PhotoDiffUtil())  {
+class ListPhotoItemAdapter(private val listener: OnClickItemListener): ListAdapter<PhotoViewItem, RecyclerView.ViewHolder>(PhotoDiffUtil())  {
 
     override fun getItemViewType(position: Int): Int {
-        return if (getItem(position).loading == true) {
+        return if (getItem(position) == PhotoViewItem.Loading) {
             LOAD_MORE_TYPE
         } else {
             PHOTO_TYPE
@@ -22,7 +22,7 @@ class ListPhotoItemAdapter(private val viewModel: ResultViewModel): ListAdapter<
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == PHOTO_TYPE) {
-            PhotoViewHolder.create(parent, viewModel, parent.context)
+            PhotoViewHolder.create(parent, listener, parent.context)
         } else {
             LoadingViewHolder.create(parent)
         }
@@ -30,7 +30,7 @@ class ListPhotoItemAdapter(private val viewModel: ResultViewModel): ListAdapter<
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (getItemViewType(position) == PHOTO_TYPE) {
-            (holder as PhotoViewHolder).build(getItem(position))
+            (holder as PhotoViewHolder).build(getItem(position) as PhotoViewItem.PhotoItem)
         }
     }
 
