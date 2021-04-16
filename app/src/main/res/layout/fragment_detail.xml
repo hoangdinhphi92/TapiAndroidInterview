@@ -6,27 +6,17 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".screens.result.ResultFragment"
-        android:transitionName="@string/detail_transition_name">
+        android:transitionName="@string/detail_transition_name"
+        tools:context=".screens.result.ResultFragment">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/picture_img"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#AC2E2E"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/back_img"
-            android:layout_width="46dp"
-            android:layout_height="46dp"
-            android:scaleType="centerInside"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:src="@drawable/common_main_back_white_icon"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

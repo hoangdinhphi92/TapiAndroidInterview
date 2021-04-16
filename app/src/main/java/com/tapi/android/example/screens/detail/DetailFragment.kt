@@ -1,20 +1,32 @@
 package com.tapi.android.example.screens.detail
 
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.doOnPreDraw
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
+import com.bumptech.glide.request.transition.DrawableCrossFadeFactory
 import com.google.android.material.transition.MaterialContainerTransform
 import com.tapi.android.example.R
 import com.tapi.android.example.databinding.FragmentDetailBinding
-import com.tapi.android.example.utils.load
+import com.tapi.android.example.utils.loadDetail
+import com.tapi.android.example.utils.loadImageBitmap
 import com.tapi.android.example.utils.themeColor
+
 
 class DetailFragment : Fragment() {
 
@@ -35,6 +47,7 @@ class DetailFragment : Fragment() {
             scrimColor = Color.TRANSPARENT
             setAllContainerColors(requireContext().themeColor(R.attr.colorSurface))
         }
+
     }
 
     override fun onCreateView(
@@ -48,15 +61,26 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // TODO: Set up postponed enter transition.
-        postponeEnterTransition()
-        view.doOnPreDraw { startPostponedEnterTransition() }
+        initToolbar()
 
-        binding.backImg.setOnClickListener {
-            findNavController().navigateUp()
+        parentFragment?.let { binding.pictureImg.loadImageBitmap(it, urlsThumbs) }
+    }
+
+    private fun initToolbar() {
+        with(activity as AppCompatActivity) {
+            supportActionBar?.title = "Detail Fragment"
+
+            val toolbar: Toolbar = requireActivity().findViewById<Toolbar>(R.id.toolbar)
+
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            supportActionBar?.setDisplayShowHomeEnabled(true)
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                toolbar.setNavigationOnClickListener {
+                    findNavController().navigateUp()
+                }
+            }
         }
-
-        binding.pictureImg.load(urlsThumbs)
 
     }
 

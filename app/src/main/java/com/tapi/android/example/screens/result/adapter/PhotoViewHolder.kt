@@ -11,38 +11,40 @@ import com.tapi.android.example.utils.load
 
 class PhotoViewHolder(
     private val viewBinding: ItemPhotoBinding,
-    private val listener: OnClickItemListener,
-    private val context: Context
+    private val listener: OnClickItemListener
 ) :
     RecyclerView.ViewHolder(viewBinding.root) {
 
-    fun build(data: PhotoViewItem.PhotoItem) = with(viewBinding){
+    fun build(data: PhotoViewItem.PhotoItem){
         init(data)
 
-        photoItem = data
-        photoImg.load(data.photo.urls.thumb)
+        viewBinding.photoItem = data
+        updatePicture(data)
+    }
+
+    fun updatePicture(data: PhotoViewItem.PhotoItem){
+        viewBinding.photoImg.load(data.photo.urls.thumb)
     }
 
     private fun init(data: PhotoViewItem.PhotoItem){
         viewBinding.photoImg.setOnClickListener {
-            listener.onSelected(it, data.photo.urls.thumb)
+            listener.onSelected(it, data.photo.urls.regular)
         }
     }
 
     companion object {
         fun create(
             parent: ViewGroup,
-            listener: OnClickItemListener, context: Context
+            listener: OnClickItemListener
         ): PhotoViewHolder {
             return PhotoViewHolder(
                 ItemPhotoBinding.inflate(
                     parent.getLayoutInflate(), parent, false
-                ), listener, context
+                ), listener
             )
         }
     }
 }
-
 
 interface OnClickItemListener{
     fun onSelected(view: View, urlThumb : String)

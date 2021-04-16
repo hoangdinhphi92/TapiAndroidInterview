@@ -3,6 +3,7 @@ package com.tapi.android.example.utils
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
@@ -12,14 +13,21 @@ import android.widget.ImageView
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.core.content.res.use
+import androidx.core.net.toUri
+import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.Target
 
 class Util {
     companion object {
         val BASE_API_URL = "https://api.unsplash.com/photos/"
-        val APPLICATION_ID = "6fa91622109e859b1c40218a5dead99f7262cf4f698b1e2cb89dd18fc5824d15"
+        val APPLICATION_ID = "cKakzKM1cx44BUYBnEIrrgN_gnGqt81UcE7GstJEils"
     }
 
 }
@@ -44,6 +52,48 @@ fun ImageView.load(imageUrl: String?) {
     if (imageUrl != null) {
         val requestOptions = RequestOptions().centerInside()
         Glide.with(context).load(imageUrl).apply(requestOptions).centerCrop().into(this)
+    }
+}
+
+fun ImageView.loadDetail(imageUrl: String?) {
+    if (imageUrl != null) {
+        val imgUri =
+            imageUrl.toUri().buildUpon().scheme("https").build()
+        val requestOptions = RequestOptions().centerInside()
+        Glide.with(context).load(imgUri).apply(requestOptions).into(this)
+    }
+}
+
+fun ImageView.loadImageBitmap(parentFragment: Fragment, urlThumbnail: String?) {
+    if (urlThumbnail != null) {
+        val imgUri =
+            urlThumbnail.toUri().buildUpon().scheme("https").build()
+
+        Glide.with(context).load(imgUri)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .listener(object : RequestListener<Drawable?> {
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<Drawable?>?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    parentFragment.startPostponedEnterTransition()
+                    return false
+                }
+
+                override fun onResourceReady(
+                    resource: Drawable?,
+                    model: Any?,
+                    target: Target<Drawable?>?,
+                    dataSource: DataSource?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    parentFragment.startPostponedEnterTransition()
+                    return false
+                }
+
+            }).centerInside().into(this)
     }
 }
 

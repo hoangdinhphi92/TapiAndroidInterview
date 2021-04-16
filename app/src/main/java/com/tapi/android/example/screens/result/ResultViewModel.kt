@@ -1,6 +1,7 @@
 package com.tapi.android.example.screens.result
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -23,9 +24,6 @@ class ResultViewModel(val app: Application) : AndroidViewModel(app) {
 
     private val _photosLoadError = MutableLiveData<String?>()
     val photoLoadError: LiveData<String?> get() = _photosLoadError
-
-    private val _loading = MutableLiveData<Boolean>()
-    val loading: LiveData<Boolean> get() = _loading
 
     var columnsCount = 1
     private var _page = 1
@@ -50,7 +48,6 @@ class ResultViewModel(val app: Application) : AndroidViewModel(app) {
                 totalList.addAll(result)
             }
 
-            _loading.value = true
             job = CoroutineScope(Dispatchers.IO).launch {
                 val response = retrofitClient.queryPhotos(page = _page)
                 withContext(Dispatchers.Main) {
@@ -60,6 +57,7 @@ class ResultViewModel(val app: Application) : AndroidViewModel(app) {
                         list?.forEach{
                             listPhotoViewItem.add(PhotoViewItem.PhotoItem(it))
                         }
+                        removeTryAgainItem()
                         totalList.addAll(listPhotoViewItem)
                         totalList.add(PhotoViewItem.Loading)
 
@@ -75,14 +73,42 @@ class ResultViewModel(val app: Application) : AndroidViewModel(app) {
 
     private fun onError(message: String) {
         _photosLoadError.value = message
-        _loading.value = false
+
         removeLoadMoreItem()
+
+        val list = _photos.value
+        if (!list.isNullOrEmpty()) {
+            val tryAgain = list.find {
+                it is PhotoViewItem.TryAgain
+            }
+            if (tryAgain == null) {
+                val listNew = mutableListOf<PhotoViewItem>()
+                listNew.addAll(list)
+                listNew.add(PhotoViewItem.TryAgain)
+                _photos.value = listNew
+            }
+        }
     }
 
     private fun removeLoadMoreItem() {
         val list = _photos.value
-        _photos.value =
-            list?.filterIsInstance<PhotoViewItem.PhotoItem>()
+        val item = list?.find {
+            it is PhotoViewItem.Loading
+        }
+        if (item!= null) {
+            _photos.value = list.filterIsInstance<PhotoViewItem.PhotoItem>()
+        }
+    }
+
+    private fun removeTryAgainItem() {
+        val list = _photos.value
+        val item = list?.find {
+            it is PhotoViewItem.TryAgain
+        }
+        if (item!= null) {
+            _photos.value = list.filterIsInstance<PhotoViewItem.PhotoItem>()
+        }
+
     }
 
     fun isLoadMoreItem(position: Int): Boolean {
