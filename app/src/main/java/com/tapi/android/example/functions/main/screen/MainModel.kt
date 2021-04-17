@@ -2,16 +2,14 @@ package com.tapi.android.example.functions.main.screen
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.tapi.android.example.Utils
 import com.tapi.android.example.data.PhotoItemView
 import com.tapi.android.example.service.APIService
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
 
 fun List<PhotoItemView>.convertList(): List<PhotoItemView.PhotoItem> {
@@ -42,39 +40,45 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     suspend fun queryPhotos(context: Context) = CoroutineScope(Dispatchers.IO).launch {
 
         if (!Utils.isNetworkConnected(context)) {
-            withContext(Dispatchers.Main){
+            withContext(Dispatchers.Main) {
                 _errData.value = TypeNetwork.NO_INTERNET
                 checkValidNetwork(TypeNetwork.NO_INTERNET)
             }
-
         } else {
-            val result = _images.value?.filter {
-                it is PhotoItemView.PhotoItem
-            }
+            try {
+                val rsList = _images.value?.convertList()
 
-            val totalList = mutableListOf<PhotoItemView>()
-            if (result != null) {
-                totalList.addAll(result)
-            }
-            val response = APIService.retrofit.queryPhotos(page = currentPage)
-            withContext(Dispatchers.Main) {
-                if (response.isSuccessful) {
-                    val list = response.body()
-                    val listTmps = ArrayList<PhotoItemView>()
-                    list?.forEach {
-                        listTmps.add(PhotoItemView.PhotoItem(it))
-                    }
-                    checkValidRemove()
-
-                    totalList.addAll(listTmps)
-                    totalList.add(PhotoItemView.LoadingItem)
-
-                    _images.value = totalList
-                    currentPage++
-                } else {
-                    _errData.value = TypeNetwork.SERVER_NOT_FOUND
+                val totalList = mutableListOf<PhotoItemView>()
+                if (rsList != null && rsList.isNotEmpty()) {
+                    totalList.addAll(rsList)
                 }
+                Log.d("TAG", "queryPhotos: call api")
+                val response = APIService.retrofit.queryPhotos(page = currentPage)
+
+                Log.d("TAG", "queryPhotos: ${response.code()}")
+
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        val list = response.body()
+                        val listTmps = ArrayList<PhotoItemView>()
+                        list?.forEach {
+                            listTmps.add(PhotoItemView.PhotoItem(it))
+                        }
+                        checkValidRemove()
+
+                        totalList.addAll(listTmps)
+                        totalList.add(PhotoItemView.LoadingItem)
+
+                        _images.value = totalList
+                        currentPage++
+                    } else {
+                        _errData.value = TypeNetwork.SERVER_NOT_FOUND
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
+
 
         }
     }
@@ -105,7 +109,7 @@ class MainModel(application: Application) : AndroidViewModel(application) {
         val list = _images.value
         if (!list.isNullOrEmpty()) {
 
-            if(!list.contains(PhotoItemView.AgainItem)){
+            if (!list.contains(PhotoItemView.AgainItem)) {
                 val listNew = mutableListOf<PhotoItemView>()
                 listNew.addAll(list)
                 listNew.add(PhotoItemView.AgainItem)

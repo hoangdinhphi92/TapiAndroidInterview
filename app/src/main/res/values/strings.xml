@@ -5,7 +5,8 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="item_tryagain_button">Try Again</string>
-    <string name="loadmore_err">Error Load More</string>
+    <string name="loadmore_err">Error Load</string>
     <string name="getdata">GET DATA</string>
     <string name="try_again">TRY AGAIN</string>
+    <string name="load_again">Load Again</string>
 </resources>

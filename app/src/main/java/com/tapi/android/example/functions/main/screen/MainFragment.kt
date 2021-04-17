@@ -10,12 +10,16 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.transition.MaterialElevationScale
 import com.tapi.android.example.R
 import com.tapi.android.example.Utils
 import com.tapi.android.example.data.PhotoItemView
@@ -35,29 +39,31 @@ class MainFragment : Fragment(), OnActionCallBack {
 
     private val observerList = Observer<List<PhotoItemView>> {
         if (it.isNotEmpty()) {
-            setViewIdle()
+            setViewIsNotEmptyList()
             mainAdapter.submitList(it)
         }
     }
 
     private val observerErr = Observer<TypeNetwork> {
         if (it == TypeNetwork.NO_INTERNET && mainModel.imagesData.value.isNullOrEmpty()) {
-            setViewError("error")
+            setViewErrorNetwork("error")
         }
     }
 
-    private fun setViewIdle() {
+    private fun setViewIsNotEmptyList() {
         binding.errTv.visibility = View.INVISIBLE
-        binding.getDataBtn.visibility = View.INVISIBLE
-        binding.getDataBtn.text = getString(R.string.getdata)
+        binding.btLoad.visibility = View.INVISIBLE
+        binding.btLoad.text = getString(R.string.getdata)
         binding.rvPhoto.visibility = View.VISIBLE
     }
 
-    private fun setViewError(error: String) {
-        binding.errTv.visibility = View.VISIBLE
-        binding.getDataBtn.visibility = View.VISIBLE
-        binding.getDataBtn.text = getString(R.string.try_again)
-        binding.errTv.text = error
+    private fun setViewErrorNetwork(error: String) {
+        binding.errTv.apply {
+            visibility = View.VISIBLE
+            text = error
+        }
+        binding.btLoad.visibility = View.VISIBLE
+        binding.btLoad.text = getString(R.string.try_again)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,6 +82,10 @@ class MainFragment : Fragment(), OnActionCallBack {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        postponeEnterTransition()
+        view.doOnPreDraw { startPostponedEnterTransition() }
+
         mainAdapter = MainAdapter(requireContext(), mainModel, this)
         observerData()
         initLists()
@@ -138,7 +148,8 @@ class MainFragment : Fragment(), OnActionCallBack {
         override fun onReceive(context: Context?, intent: Intent?) {
             lifecycleScope.launchWhenResumed {
                 if (Utils.isNetworkConnected(requireContext())) {
-                    setViewIdle()
+
+                    setViewIsNotEmptyList()
                     mainModel.queryPhotos(requireContext())
                 } else {
                   /*  setViewError("error")*/
@@ -170,8 +181,17 @@ class MainFragment : Fragment(), OnActionCallBack {
     }
 
     override fun onClickItem(view: View, url: String) {
-        /* val action = MainFragmentDirections.actionMainFragmentToDetailFragment(url)
-         findNavController().navigate(action)*/
+      /*  exitTransition = MaterialElevationScale(false).apply {
+            duration = 500
+        }
+        reenterTransition = MaterialElevationScale(true).apply {
+            duration = 500
+        }
+        val emailCardDetailTransitionName = getString(R.string.detail_transition_name)
+        val extras = FragmentNavigatorExtras(view to emailCardDetailTransitionName)*/
+
+        val action = MainFragmentDirections.actionMainFragmentToDetailFragment(url)
+         findNavController().navigate(action)
     }
 
 

@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
 
 
 const val BASE_URL = "https://api.unsplash.com/"
-private const val CLIENT_ID = "qvCbQbUZ7aYALe92pRjVIgmah6s4Z37x6wVhkQO6VxU"
+private const val CLIENT_ID = "cKakzKM1cx44BUYBnEIrrgN_gnGqt81UcE7GstJEils"
 
 
 val client = OkHttpClient.Builder().callTimeout(30, TimeUnit.SECONDS)
