@@ -1,45 +1,102 @@
 package com.tapi.android.example.functions.main.adapter
 
 import android.content.Context
-import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.tapi.android.example.R
-import com.tapi.android.example.data.Photo
+import com.tapi.android.example.data.PhotoItemView
+import com.tapi.android.example.event.OnActionCallBack
+import com.tapi.android.example.functions.main.AgainHolder
+import com.tapi.android.example.functions.main.LoadingHolder
+import com.tapi.android.example.functions.main.MainHolder
+import com.tapi.android.example.functions.main.screen.MainModel
 
-class MainAdapter(val mContext: Context) : ListAdapter<Photo, MainAdapter.MainHolder>(PhotoDiff()) {
+
+class MainAdapter(val mContext: Context, val model: MainModel, val mCallback: OnActionCallBack) :
+    ListAdapter<PhotoItemView, RecyclerView.ViewHolder>(PhotoDiff()) {
 
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainHolder {
-        val view = LayoutInflater.from(mContext).inflate(R.layout.item_photo, parent, false)
-        return MainHolder(view)
+    override fun getItemViewType(position: Int): Int {
+
+        return when (getItem(position)) {
+            PhotoItemView.LoadingItem -> {
+                TypeItem.LOADDING_ITEM.ordinal
+            }
+            PhotoItemView.AgainItem -> {
+                TypeItem.AGAIN_ITEM.ordinal
+            }
+            else -> {
+                TypeItem.PHOTO_ITEM.ordinal
+            }
+        }
+
     }
 
-    override fun onBindViewHolder(holder: MainHolder, position: Int) {
 
-        Glide.with(mContext).load(getItem(position).photoUrls.thumb).into(holder.ivImage)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+
+        return when (viewType) {
+            TypeItem.LOADDING_ITEM.ordinal -> {
+                LoadingHolder.create(parent)
+            }
+            TypeItem.AGAIN_ITEM.ordinal -> {
+                AgainHolder.create(parent, model)
+            }
+            else -> {
+                MainHolder.create(parent, mCallback)
+            }
+        }
 
     }
 
-    class MainHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val ivImage = itemView.findViewById<ImageView>(R.id.iv_item)
+    override fun onBindViewHolder(
+        holder: RecyclerView.ViewHolder,
+        position: Int,
+        payloads: MutableList<Any>
+    ) {
+        if (payloads.isEmpty()) {
+            onBindViewHolder(holder, position)
+        } else if (payloads.firstOrNull() as? Int == 1001) {
+            (holder as MainHolder).bind(getItem(position) as PhotoItemView.PhotoItem)
+        }
+
+
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        if (getItemViewType(position) == TypeItem.PHOTO_ITEM.ordinal) {
+            (holder as MainHolder).bind(getItem(position) as PhotoItemView.PhotoItem)
+        } else if (getItemViewType(position) == TypeItem.AGAIN_ITEM.ordinal) {
+            (holder as AgainHolder).bind()
+        }
     }
 
 
 }
 
-class PhotoDiff : DiffUtil.ItemCallback<Photo>() {
-    override fun areItemsTheSame(oldItem: Photo, newItem: Photo): Boolean {
-        return oldItem == newItem
+class PhotoDiff : DiffUtil.ItemCallback<PhotoItemView>() {
+    override fun areItemsTheSame(oldItem: PhotoItemView, newItem: PhotoItemView): Boolean {
+        if (oldItem is PhotoItemView.PhotoItem && newItem is PhotoItemView.PhotoItem) {
+            return oldItem.photo.id == newItem.photo.id
+        }
+        return false
     }
 
-    override fun areContentsTheSame(oldItem: Photo, newItem: Photo): Boolean {
-        return oldItem.id == newItem.id
+    override fun areContentsTheSame(oldItem: PhotoItemView, newItem: PhotoItemView): Boolean {
+        return false
     }
 
+    override fun getChangePayload(oldItem: PhotoItemView, newItem: PhotoItemView): Any? {
+        if (oldItem is PhotoItemView.PhotoItem && newItem is PhotoItemView.PhotoItem) {
+
+            return 1001
+        }
+        return null
+    }
+
+}
+
+enum class TypeItem(num: Int) {
+    PHOTO_ITEM(0), LOADDING_ITEM(1), AGAIN_ITEM(2)
 }
