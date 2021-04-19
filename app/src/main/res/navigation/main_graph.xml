@@ -2,6 +2,25 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main_graph">
-
+    android:id="@+id/main_graph"
+    app:startDestination="@id/homeFragment">
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.tapi.android.example.fragment.HomeFragment"
+        android:label="HomeFragment" >
+        <action
+            android:id="@+id/action_homeFragment_to_detailFragment"
+            app:destination="@id/detailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="com.tapi.android.example.fragment.DetailFragment"
+        android:label="DetailFragment" >
+        <argument android:name="img_url"
+            app:argType="string"
+            app:nullable="true" />
+        <argument android:name="id"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
 </navigation>
