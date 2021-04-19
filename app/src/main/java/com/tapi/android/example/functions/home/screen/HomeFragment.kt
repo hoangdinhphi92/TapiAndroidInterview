@@ -1,17 +1,17 @@
-package com.tapi.android.example.functions.main.screen
+package com.tapi.android.example.functions.home.screen
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnPreDraw
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
@@ -19,39 +19,56 @@ import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.transition.MaterialElevationScale
+import com.google.android.material.transition.platform.MaterialElevationScale
 import com.tapi.android.example.R
-import com.tapi.android.example.Utils
 import com.tapi.android.example.data.PhotoItemView
-import com.tapi.android.example.databinding.FragmentMainBinding
+import com.tapi.android.example.databinding.FragmentHomeBinding
 import com.tapi.android.example.event.OnActionCallBack
-import com.tapi.android.example.functions.main.adapter.MainAdapter
-import com.tapi.android.example.functions.main.adapter.TypeItem
+import com.tapi.android.example.event.OnCallBackToFragment
+import com.tapi.android.example.functions.bases.BaseFragment
+import com.tapi.android.example.functions.home.adapter.HomeAdapter
+import com.tapi.android.example.functions.home.adapter.TypeItem
+import com.tapi.android.example.util.Constance
+import com.tapi.android.example.util.Utils
 import kotlinx.coroutines.delay
 
 
-class MainFragment : Fragment(), OnActionCallBack {
+class HomeFragment : BaseFragment(), OnActionCallBack, OnCallBackToFragment {
 
-    private val mainModel: MainModel by viewModels()
-    private var _binding: FragmentMainBinding? = null
-    val binding: FragmentMainBinding get() = _binding!!
-    private lateinit var mainAdapter: MainAdapter
+    private val mainModel: HomeModel by viewModels()
+    private var _binding: FragmentHomeBinding? = null
+    val binding: FragmentHomeBinding get() = _binding!!
+    private lateinit var mainAdapter: HomeAdapter
     private var curTmp: Int = -1
 
 
     private val observerList = Observer<List<PhotoItemView>> {
+        binding.pgMain.visibility = View.VISIBLE
         if (it.isNotEmpty()) {
             curTmp = it.size
             setViewIsNotEmptyList()
             mainAdapter.submitList(it)
+            binding.pgMain.visibility = View.INVISIBLE
         }
+
     }
 
     private val observerErr = Observer<TypeNetwork> {
-        if (it == TypeNetwork.NO_INTERNET) {
-            if (mainModel.imagesData.value.isNullOrEmpty()) {
-                setViewErrorNetwork("error")
+        Log.d("TAG", "observerErr: $it")
+        if (mainModel.imagesData.value.isNullOrEmpty()) {
+
+            when (it) {
+                TypeNetwork.NO_INTERNET -> {
+                    setViewErrorNetwork("no internet")
+                }
+                TypeNetwork.CALL_TIME_OUT -> {
+                    setViewErrorNetwork("call time out")
+                }
+                TypeNetwork.SERVER_NOT_FOUND -> {
+                    setViewErrorNetwork("Server Not found")
+                }
             }
+
         }
     }
 
@@ -65,7 +82,7 @@ class MainFragment : Fragment(), OnActionCallBack {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentMainBinding.inflate(inflater, container, false)
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
         initViews()
         return binding.root
     }
@@ -76,7 +93,8 @@ class MainFragment : Fragment(), OnActionCallBack {
         postponeEnterTransition()
         view.doOnPreDraw { startPostponedEnterTransition() }
 
-        mainAdapter = MainAdapter(requireContext(), mainModel, this)
+        getMainActivity()?.setOnCallBack(this)
+        mainAdapter = HomeAdapter(requireContext(), mainModel, this)
         observerData()
         initLists()
 
@@ -91,19 +109,19 @@ class MainFragment : Fragment(), OnActionCallBack {
     private fun initLists() {
 
         val gridLayoutManager = GridLayoutManager(
-            requireContext(), mainModel.columnsCount
+            requireContext(), 3
         )
-
         binding.rvPhoto.layoutManager = gridLayoutManager
+        binding.rvPhoto.setHasFixedSize(true)
         binding.rvPhoto.adapter = mainAdapter
         recycleListener()
 
         gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
                 return when (mainAdapter.getItemViewType(position)) {
-                    TypeItem.LOADDING_ITEM.ordinal -> mainModel.columnsCount
+                    TypeItem.LOADDING_ITEM.ordinal -> 3
                     TypeItem.PHOTO_ITEM.ordinal -> 1
-                    TypeItem.AGAIN_ITEM.ordinal -> mainModel.columnsCount
+                    TypeItem.AGAIN_ITEM.ordinal -> 3
                     else -> -1
                 }
             }
@@ -184,7 +202,7 @@ class MainFragment : Fragment(), OnActionCallBack {
                     }
                 } else {
                     if (curTmp == -1) {
-                        setViewErrorNetwork("error")
+                        setViewErrorNetwork("network unavailable")
                     }
                 }
             }
@@ -214,17 +232,26 @@ class MainFragment : Fragment(), OnActionCallBack {
     }
 
     override fun onClickItem(view: View, url: String) {
-         /*exitTransition = MaterialElevationScale(false).apply {
-            duration = 500
-        }
-        reenterTransition = MaterialElevationScale(true).apply {
-            duration = 500
-        }*/
-        binding.rvPhoto.setHasFixedSize(true)
-        val extras = FragmentNavigatorExtras(view to url)
+        sendAction(Constance.ACTION_CLICK_PHOTO)
+        val action = HomeFragmentDirections.actionMainFragmentToDetailFragment(url)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            exitTransition = MaterialElevationScale(false).apply {
+                duration = 200
+            }
+            returnTransition = MaterialElevationScale(true).apply {
+                duration = 200
+            }
 
-        val action = MainFragmentDirections.actionMainFragmentToDetailFragment(url)
-        findNavController().navigate(action, extras)
+            val shareElementName = getString(R.string.detail_transition_name)
+            val extras = FragmentNavigatorExtras(view to shareElementName)
+            findNavController().navigate(action, extras)
+        } else {
+            findNavController().navigate(action)
+        }
+    }
+
+    override fun backPressToFrg() {
+        requireActivity().onBackPressed()
     }
 
 

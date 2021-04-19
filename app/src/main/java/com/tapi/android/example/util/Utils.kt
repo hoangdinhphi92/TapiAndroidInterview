@@ -1,4 +1,4 @@
-package com.tapi.android.example
+package com.tapi.android.example.util
 
 import android.content.Context
 import android.net.ConnectivityManager
@@ -25,16 +25,13 @@ class Utils {
             }
         }
 
-        fun View.loadImage(url: String) {
-            Glide.with(this.context).load(url).into(this as ImageView)
+
+        fun View.loadImageHolder(url: String) {
+
+            Glide.with(this.context).load(url).centerCrop().dontAnimate()
+                .into(this as ImageView)
         }
 
-        fun calculatorValue(
-            context: Context, columnWidthDp: Float): Int {
-            val displayMetrics = context.resources.displayMetrics
-            val screenWidthDp = displayMetrics.widthPixels / displayMetrics.density
-            return (screenWidthDp / columnWidthDp + 0.5).toInt()
-        }
     }
 
 

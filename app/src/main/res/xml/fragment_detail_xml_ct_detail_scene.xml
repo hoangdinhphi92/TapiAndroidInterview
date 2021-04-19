@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:motion="http://schemas.android.com/apk/res-auto">
+
+    <Transition
+        motion:constraintSetEnd="@+id/end"
+        motion:constraintSetStart="@id/start"
+        motion:duration="200">
+        <KeyFrameSet>
+            <KeyAttribute
+                android:translationX="-100dp"
+                motion:motionTarget="@+id/back_tv">
+
+            </KeyAttribute>
+        </KeyFrameSet>
+    </Transition>
+
+    <ConstraintSet android:id="@+id/start">
+        <Constraint
+            android:id="@+id/back_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:drawableLeft="@drawable/ic_baseline_arrow_back_ios_24"
+            android:drawableTint="@color/white"
+            android:gravity="center"
+            android:text="DetailFragment"
+            android:textColor="@color/white"
+            android:textSize="25dp"
+            motion:layout_constraintBottom_toBottomOf="@id/view_action_bar"
+            motion:layout_constraintLeft_toLeftOf="parent"
+            motion:layout_constraintTop_toTopOf="@+id/view_action_bar">
+
+        </Constraint>
+
+    </ConstraintSet>
+
+    <ConstraintSet android:id="@+id/end">
+        <Constraint
+            android:id="@+id/back_tv"
+            android:layout_width="wrap_content"
+
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="DetailFragment"
+            android:textColor="@color/white"
+            android:textSize="25dp"
+            motion:layout_constraintBottom_toBottomOf="@id/view_action_bar"
+            motion:layout_constraintRight_toLeftOf="parent"
+            motion:layout_constraintTop_toTopOf="@+id/view_action_bar">
+
+        </Constraint>
+    </ConstraintSet>
+</MotionScene>

@@ -3,25 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_graph"
-    app:startDestination="@id/mainFragment">
+    app:startDestination="@id/mainFragment2">
 
     <fragment
-        android:id="@+id/mainFragment"
-        android:name="com.tapi.android.example.functions.main.screen.MainFragment"
-        android:label="fragment_main"
-        tools:layout="@layout/fragment_main" >
-        <action
-            android:id="@+id/action_mainFragment_to_detailFragment"
-            app:destination="@id/detailFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/detailFragment"
-        android:name="com.tapi.android.example.functions.detail.DetailFragment"
-        android:label="fragment_detail"
-        tools:layout="@layout/fragment_detail" >
-
-        <argument
-            android:name="url"
-            app:argType="string" />
-    </fragment>
+        android:id="@+id/mainFragment2"
+        tools:layout="@layout/frg_main"
+        android:name="com.tapi.android.example.functions.main.MainFragment"
+        android:label="MainFragment" />
 </navigation>

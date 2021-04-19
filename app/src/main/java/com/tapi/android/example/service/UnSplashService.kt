@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
 
 
 const val BASE_URL = "https://api.unsplash.com/"
-private const val CLIENT_ID = "cKakzKM1cx44BUYBnEIrrgN_gnGqt81UcE7GstJEils"
+private const val CLIENT_ID = "qvCbQbUZ7aYALe92pRjVIgmah6s4Z37x6wVhkQO6VxU"
 
 
  val client = OkHttpClient.Builder().callTimeout(30, TimeUnit.SECONDS)
@@ -29,7 +29,7 @@ interface UnSplashService {
     @GET("/photos/")
     suspend fun queryPhotos(
         @Query("page") page: Int = 1,
-        @Query("per_page") perPage: Int = 12,
+        @Query("per_page") perPage: Int = 15,
         @Query("client_id") id: String = CLIENT_ID
 
     ): Response<List<Photo>>

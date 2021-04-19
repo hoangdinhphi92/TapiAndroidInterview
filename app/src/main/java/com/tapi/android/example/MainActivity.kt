@@ -1,20 +1,27 @@
 package com.tapi.android.example
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import androidx.navigation.NavController
-import androidx.navigation.Navigation
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.setupActionBarWithNavController
+import android.view.KeyEvent
+import com.tapi.android.example.event.OnCallBackToFragment
+import com.tapi.android.example.functions.bases.BaseActivity
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
+    private lateinit var mCallback: OnCallBackToFragment
 
+    fun setOnCallBack(event: OnCallBackToFragment) {
+        mCallback = event
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
     }
 
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.repeatCount == 0) {
+            mCallback.backPressToFrg()
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
+    }
 }

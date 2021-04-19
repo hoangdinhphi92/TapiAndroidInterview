@@ -1,4 +1,4 @@
-package com.tapi.android.example.functions.main.screen
+package com.tapi.android.example.functions.home.screen
 
 import android.app.Application
 import android.content.Context
@@ -6,9 +6,9 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.tapi.android.example.Utils
 import com.tapi.android.example.data.PhotoItemView
 import com.tapi.android.example.service.APIService
+import com.tapi.android.example.util.Utils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -23,34 +23,31 @@ fun List<PhotoItemView>.convertList(): List<PhotoItemView.PhotoItem> {
     return lists
 }
 
-class MainModel(application: Application) : AndroidViewModel(application) {
+class HomeModel(application: Application) : AndroidViewModel(application) {
 
     private var _images: MutableLiveData<List<PhotoItemView>> = MutableLiveData()
     val imagesData: LiveData<List<PhotoItemView>> get() = _images
+
 
     private val _errData = MutableLiveData<TypeNetwork>()
     val errData: LiveData<TypeNetwork> get() = _errData
 
     private var currentPage = 1
-    var columnsCount = 1
 
-    init {
-        columnsCount = Utils.calculatorValue(getApplication(), 120f)
-    }
 
     suspend fun queryPhotos(context: Context): Boolean {
-
+        var rs: Boolean
         if (!Utils.isNetworkConnected(context)) {
             _errData.value = TypeNetwork.NO_INTERNET
             checkValidNetwork(TypeNetwork.NO_INTERNET)
-            return false
+            rs = false
         } else {
             try {
                 checkValidRemove()
                 val rsList = _images.value?.convertList()
 
                 val images = mutableListOf<PhotoItemView>()
-                if (rsList != null && rsList.isNotEmpty()) {
+                if (rsList != null && !rsList.isEmpty()) {
                     images.addAll(rsList)
                 }
                 Log.d("TAG", "queryPhotos: call api")
@@ -58,33 +55,40 @@ class MainModel(application: Application) : AndroidViewModel(application) {
                     val response = APIService.retrofit.queryPhotos(page = currentPage)
 
                     Log.d("TAG", "queryPhotos: ${response.code()}")
-                    if (response.code() == 504) {
-                        _errData.value = TypeNetwork.CALL_TIME_OUT
 
-                    }
                     withContext(Dispatchers.Main) {
-                        if (response.isSuccessful) {
-                            val listTmps = ArrayList<PhotoItemView>()
-                            response.body()?.map {
-                                listTmps.add(PhotoItemView.PhotoItem(it))
+                        when {
+                            response.code() == 200 -> {
+                                val listTmps = ArrayList<PhotoItemView>()
+                                response.body()?.map {
+                                    listTmps.add(PhotoItemView.PhotoItem(it))
+                                }
+
+                                images.addAll(listTmps)
+                                images.add(PhotoItemView.LoadingItem)
+
+                                _images.value = images
+                                currentPage++
+                                rs = true
                             }
+                            response.code() == 504 -> {
 
-                            images.addAll(listTmps)
-                            images.add(PhotoItemView.LoadingItem)
-
-                            _images.value = images
-                            currentPage++
-                        } else {
-                            _errData.value = TypeNetwork.SERVER_NOT_FOUND
+                                _errData.value = TypeNetwork.CALL_TIME_OUT
+                                rs = false
+                            }
+                            else -> {
+                                _errData.value = TypeNetwork.SERVER_NOT_FOUND
+                                rs = false
+                            }
                         }
                     }
                 }
-                return true
             } catch (e: Exception) {
                 e.printStackTrace()
-                return false
+                rs = false
             }
         }
+        return rs
     }
 
     private fun checkValidLoadMore() {
@@ -122,6 +126,7 @@ class MainModel(application: Application) : AndroidViewModel(application) {
 
         }
     }
+
 }
 
 enum class TypeNetwork {
