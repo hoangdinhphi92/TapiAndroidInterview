@@ -12,6 +12,7 @@ interface UnSplashService {
 
     // Edit This
     @GET("/photos")
-    suspend fun queryPhotos(): List<Photo>
+    suspend fun queryPhotos(@Query ("page") page: Int,@Query("per_page") per_page: Int): Response<List<Photo>>
+
 
 }

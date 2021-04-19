@@ -2,4 +2,7 @@
     <string name="app_name">TapiAndroidExample</string>
     <string name="detail_transition_name">detail_fragment</string>
     <string name="photo_item_transition_name">photo_item_$1%s</string>
+    <string name="error_load">Error Load</string>
+    <string name="error_load_more">Error Load More</string>
+    <string name="try_again">TRY AGAIN</string>
 </resources>

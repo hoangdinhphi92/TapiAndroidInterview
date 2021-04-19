@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="photoItem"
+            type="com.tapi.android.example.data.PhotoViewItem" />
+
+        <variable
+            name="listener"
+            type="com.tapi.android.example.listener.PhotoItemListener" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/iv_photo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:onClick="@{(view)->listener.onClickedPhotoItem(photoItem,view)}"
+            android:scaleType="centerCrop"
+            android:transitionName="@string/detail_transition_name"
+            app:setImageUrl="@{photoItem.photo.urls.thumb}" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
