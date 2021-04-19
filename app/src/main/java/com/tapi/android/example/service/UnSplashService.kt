@@ -14,7 +14,7 @@ const val BASE_URL = "https://api.unsplash.com/"
 private const val CLIENT_ID = "cKakzKM1cx44BUYBnEIrrgN_gnGqt81UcE7GstJEils"
 
 
-val client = OkHttpClient.Builder().callTimeout(30, TimeUnit.SECONDS)
+ val client = OkHttpClient.Builder().callTimeout(30, TimeUnit.SECONDS)
     .hostnameVerifier { _, _ -> true }.build()
 
 val mRetrofit = Retrofit.Builder().baseUrl(BASE_URL).client(client)

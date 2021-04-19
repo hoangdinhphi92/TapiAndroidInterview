@@ -9,7 +9,8 @@ import androidx.lifecycle.MutableLiveData
 import com.tapi.android.example.Utils
 import com.tapi.android.example.data.PhotoItemView
 import com.tapi.android.example.service.APIService
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 
 fun List<PhotoItemView>.convertList(): List<PhotoItemView.PhotoItem> {
@@ -37,49 +38,52 @@ class MainModel(application: Application) : AndroidViewModel(application) {
         columnsCount = Utils.calculatorValue(getApplication(), 120f)
     }
 
-    suspend fun queryPhotos(context: Context) = CoroutineScope(Dispatchers.IO).launch {
+    suspend fun queryPhotos(context: Context): Boolean {
 
         if (!Utils.isNetworkConnected(context)) {
-            withContext(Dispatchers.Main) {
-                _errData.value = TypeNetwork.NO_INTERNET
-                checkValidNetwork(TypeNetwork.NO_INTERNET)
-            }
+            _errData.value = TypeNetwork.NO_INTERNET
+            checkValidNetwork(TypeNetwork.NO_INTERNET)
+            return false
         } else {
             try {
+                checkValidRemove()
                 val rsList = _images.value?.convertList()
 
-                val totalList = mutableListOf<PhotoItemView>()
+                val images = mutableListOf<PhotoItemView>()
                 if (rsList != null && rsList.isNotEmpty()) {
-                    totalList.addAll(rsList)
+                    images.addAll(rsList)
                 }
                 Log.d("TAG", "queryPhotos: call api")
-                val response = APIService.retrofit.queryPhotos(page = currentPage)
+                withContext(Dispatchers.IO) {
+                    val response = APIService.retrofit.queryPhotos(page = currentPage)
 
-                Log.d("TAG", "queryPhotos: ${response.code()}")
+                    Log.d("TAG", "queryPhotos: ${response.code()}")
+                    if (response.code() == 504) {
+                        _errData.value = TypeNetwork.CALL_TIME_OUT
 
-                withContext(Dispatchers.Main) {
-                    if (response.isSuccessful) {
-                        val list = response.body()
-                        val listTmps = ArrayList<PhotoItemView>()
-                        list?.forEach {
-                            listTmps.add(PhotoItemView.PhotoItem(it))
+                    }
+                    withContext(Dispatchers.Main) {
+                        if (response.isSuccessful) {
+                            val listTmps = ArrayList<PhotoItemView>()
+                            response.body()?.map {
+                                listTmps.add(PhotoItemView.PhotoItem(it))
+                            }
+
+                            images.addAll(listTmps)
+                            images.add(PhotoItemView.LoadingItem)
+
+                            _images.value = images
+                            currentPage++
+                        } else {
+                            _errData.value = TypeNetwork.SERVER_NOT_FOUND
                         }
-                        checkValidRemove()
-
-                        totalList.addAll(listTmps)
-                        totalList.add(PhotoItemView.LoadingItem)
-
-                        _images.value = totalList
-                        currentPage++
-                    } else {
-                        _errData.value = TypeNetwork.SERVER_NOT_FOUND
                     }
                 }
+                return true
             } catch (e: Exception) {
                 e.printStackTrace()
+                return false
             }
-
-
         }
     }
 
@@ -120,6 +124,6 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     }
 }
 
-enum class TypeNetwork() {
+enum class TypeNetwork {
     NO_INTERNET, CALL_TIME_OUT, SERVER_NOT_FOUND
 }

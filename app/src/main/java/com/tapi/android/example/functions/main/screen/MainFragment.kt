@@ -27,6 +27,7 @@ import com.tapi.android.example.databinding.FragmentMainBinding
 import com.tapi.android.example.event.OnActionCallBack
 import com.tapi.android.example.functions.main.adapter.MainAdapter
 import com.tapi.android.example.functions.main.adapter.TypeItem
+import kotlinx.coroutines.delay
 
 
 class MainFragment : Fragment(), OnActionCallBack {
@@ -35,48 +36,37 @@ class MainFragment : Fragment(), OnActionCallBack {
     private var _binding: FragmentMainBinding? = null
     val binding: FragmentMainBinding get() = _binding!!
     private lateinit var mainAdapter: MainAdapter
+    private var curTmp: Int = -1
 
 
     private val observerList = Observer<List<PhotoItemView>> {
         if (it.isNotEmpty()) {
+            curTmp = it.size
             setViewIsNotEmptyList()
             mainAdapter.submitList(it)
         }
     }
 
     private val observerErr = Observer<TypeNetwork> {
-        if (it == TypeNetwork.NO_INTERNET && mainModel.imagesData.value.isNullOrEmpty()) {
-            setViewErrorNetwork("error")
+        if (it == TypeNetwork.NO_INTERNET) {
+            if (mainModel.imagesData.value.isNullOrEmpty()) {
+                setViewErrorNetwork("error")
+            }
         }
     }
 
-    private fun setViewIsNotEmptyList() {
-        binding.errTv.visibility = View.INVISIBLE
-        binding.btLoad.visibility = View.INVISIBLE
-        binding.btLoad.text = getString(R.string.getdata)
-        binding.rvPhoto.visibility = View.VISIBLE
-    }
-
-    private fun setViewErrorNetwork(error: String) {
-        binding.errTv.apply {
-            visibility = View.VISIBLE
-            text = error
-        }
-        binding.btLoad.visibility = View.VISIBLE
-        binding.btLoad.text = getString(R.string.try_again)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         registerReceiverNetwork()
     }
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMainBinding.inflate(inflater, container, false)
+        initViews()
         return binding.root
     }
 
@@ -120,6 +110,22 @@ class MainFragment : Fragment(), OnActionCallBack {
         }
     }
 
+    private fun initViews() {
+        binding.loadTv.setOnClickListener {
+            lifecycleScope.launchWhenResumed {
+                binding.errTv.visibility = View.GONE
+                binding.pgMain.visibility = View.VISIBLE
+                delay(500)
+                val result = mainModel.queryPhotos(requireContext())
+                if (result) {
+                    setViewIsNotEmptyList()
+                } else {
+                    setViewErrorNetwork("error")
+                }
+            }
+        }
+    }
+
 
     private fun recycleListener() {
         binding.rvPhoto.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -144,15 +150,42 @@ class MainFragment : Fragment(), OnActionCallBack {
         })
     }
 
+    private fun setViewIsNotEmptyList() {
+        binding.pgMain.visibility = View.INVISIBLE
+        binding.errTv.visibility = View.INVISIBLE
+        binding.loadTv.apply {
+            visibility = View.INVISIBLE
+            text = getString(R.string.getdata)
+        }
+        binding.rvPhoto.visibility = View.VISIBLE
+    }
+
+
+    private fun setViewErrorNetwork(error: String) {
+        binding.pgMain.visibility = View.INVISIBLE
+        binding.errTv.apply {
+            visibility = View.VISIBLE
+            text = error
+        }
+        binding.loadTv.apply {
+            text = getString(R.string.load_again)
+            visibility = View.VISIBLE
+        }
+    }
+
+
     private val networkChangeReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             lifecycleScope.launchWhenResumed {
                 if (Utils.isNetworkConnected(requireContext())) {
-
-                    setViewIsNotEmptyList()
-                    mainModel.queryPhotos(requireContext())
+                    if (curTmp == -1) {
+                        setViewIsNotEmptyList()
+                        mainModel.queryPhotos(requireContext())
+                    }
                 } else {
-                  /*  setViewError("error")*/
+                    if (curTmp == -1) {
+                        setViewErrorNetwork("error")
+                    }
                 }
             }
         }
@@ -181,17 +214,17 @@ class MainFragment : Fragment(), OnActionCallBack {
     }
 
     override fun onClickItem(view: View, url: String) {
-      /*  exitTransition = MaterialElevationScale(false).apply {
+         /*exitTransition = MaterialElevationScale(false).apply {
             duration = 500
         }
         reenterTransition = MaterialElevationScale(true).apply {
             duration = 500
-        }
-        val emailCardDetailTransitionName = getString(R.string.detail_transition_name)
-        val extras = FragmentNavigatorExtras(view to emailCardDetailTransitionName)*/
+        }*/
+        binding.rvPhoto.setHasFixedSize(true)
+        val extras = FragmentNavigatorExtras(view to url)
 
         val action = MainFragmentDirections.actionMainFragmentToDetailFragment(url)
-         findNavController().navigate(action)
+        findNavController().navigate(action, extras)
     }
 
 

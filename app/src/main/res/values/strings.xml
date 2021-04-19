@@ -7,6 +7,5 @@
     <string name="item_tryagain_button">Try Again</string>
     <string name="loadmore_err">Error Load</string>
     <string name="getdata">GET DATA</string>
-    <string name="try_again">TRY AGAIN</string>
     <string name="load_again">Load Again</string>
 </resources>

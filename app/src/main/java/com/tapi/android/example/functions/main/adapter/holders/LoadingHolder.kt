@@ -1,4 +1,4 @@
-package com.tapi.android.example.functions.main
+package com.tapi.android.example.functions.main.adapter.holders
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

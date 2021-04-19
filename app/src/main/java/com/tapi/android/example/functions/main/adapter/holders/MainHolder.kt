@@ -1,4 +1,4 @@
-package com.tapi.android.example.functions.main
+package com.tapi.android.example.functions.main.adapter.holders
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -19,7 +19,7 @@ class MainHolder(private val binding: ItemPhotoBinding, val mCallBack: OnActionC
 
     private fun initViews(item: PhotoItemView.PhotoItem) {
         binding.ivItem.setOnClickListener { view ->
-            mCallBack.onClickItem(view = view, url = item.photo.photoUrls.full)
+            mCallBack.onClickItem(view = view, url = item.photo.photoUrls.raw)
         }
     }
 
@@ -33,11 +33,7 @@ class MainHolder(private val binding: ItemPhotoBinding, val mCallBack: OnActionC
                     false
                 ), event
             )
-
-
         }
-
-
     }
 
 }

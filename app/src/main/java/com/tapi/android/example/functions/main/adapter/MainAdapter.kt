@@ -7,9 +7,9 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.tapi.android.example.data.PhotoItemView
 import com.tapi.android.example.event.OnActionCallBack
-import com.tapi.android.example.functions.main.AgainHolder
-import com.tapi.android.example.functions.main.LoadingHolder
-import com.tapi.android.example.functions.main.MainHolder
+import com.tapi.android.example.functions.main.adapter.holders.AgainHolder
+import com.tapi.android.example.functions.main.adapter.holders.LoadingHolder
+import com.tapi.android.example.functions.main.adapter.holders.MainHolder
 import com.tapi.android.example.functions.main.screen.MainModel
 
 
