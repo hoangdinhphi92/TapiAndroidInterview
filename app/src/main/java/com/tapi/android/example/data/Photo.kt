@@ -1,16 +1,15 @@
 package com.tapi.android.example.data
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+sealed class UnSplashItem {
+    data class Photo(
+        val id: String,
+        val description: String,
+        val urls: PhotoUrls
+    ) : UnSplashItem()
 
-@Parcelize
-data class Photo(
-    val id: String,
-    val description: String,
-    val urls: PhotoUrls
-)
+    data class LoadingItem(var isLoading: Boolean = true) : UnSplashItem()
+}
 
-@Parcelize
 data class PhotoUrls(
     val raw: String,
     val full: String,
