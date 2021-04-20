@@ -1,4 +1,4 @@
-package com.tapi.android.example.screens.result
+package com.tapi.android.example.screens.home
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

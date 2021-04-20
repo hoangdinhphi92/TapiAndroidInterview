@@ -17,6 +17,7 @@ import com.tapi.android.example.databinding.FragmentDetailBinding
 import com.tapi.android.example.utils.loadImageBitmap
 import com.tapi.android.example.utils.themeColor
 
+const val DETAIL_FRAGMENT_NAME = "Detail Fragment"
 
 class DetailFragment : Fragment() {
 
@@ -25,7 +26,7 @@ class DetailFragment : Fragment() {
 
     private val args: DetailFragmentArgs by navArgs()
 
-    private val urlsThumbs: String by lazy { args.urlThumbs }
+    private val urlThumbRegular: String by lazy { args.urlThumbs }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,12 +55,12 @@ class DetailFragment : Fragment() {
 
         initToolbar()
 
-        this.loadImageBitmap(binding.pictureImg, urlsThumbs)
+        this.loadImageBitmap(binding.pictureImg, urlThumbRegular)
     }
 
     private fun initToolbar() {
         with(activity as AppCompatActivity) {
-            supportActionBar?.title = "Detail Fragment"
+            supportActionBar?.title = DETAIL_FRAGMENT_NAME
 
             val toolbar: Toolbar = requireActivity().findViewById(R.id.toolbar)
 

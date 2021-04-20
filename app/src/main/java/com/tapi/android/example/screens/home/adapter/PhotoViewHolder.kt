@@ -1,6 +1,6 @@
-package com.tapi.android.example.screens.result.adapter
+package com.tapi.android.example.screens.home.adapter
 
-import android.content.Context
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -15,20 +15,28 @@ class PhotoViewHolder(
 ) :
     RecyclerView.ViewHolder(viewBinding.root) {
 
-    fun build(data: PhotoViewItem.PhotoItem){
-        init(data)
+    private var photoViewItem : PhotoViewItem.PhotoItem? = null
 
-        viewBinding.photoItem = data
+    fun build(data: PhotoViewItem.PhotoItem){
+        initOnclick()
+
         updatePicture(data)
     }
 
-    fun updatePicture(data: PhotoViewItem.PhotoItem){
-        viewBinding.photoImg.load(data.photo.urls.thumb)
+    fun updatePicture(data: PhotoViewItem.PhotoItem) = with(viewBinding) {
+        id = data.photo.id
+        photoViewItem = data
+
+        photoImg.load(data.photo.urls.thumb)
     }
 
-    private fun init(data: PhotoViewItem.PhotoItem){
+    private fun initOnclick(){
         viewBinding.photoImg.setOnClickListener {
-            listener.onSelected(it, data.photo.urls.regular)
+            val item = photoViewItem
+            if (item != null) {
+                Log.e("MTHAI", "initOnclick: ${item.photo.id}" )
+                listener.onSelected(it, item.photo.urls.regular)
+            }
         }
     }
 
@@ -47,5 +55,5 @@ class PhotoViewHolder(
 }
 
 interface OnClickItemListener{
-    fun onSelected(view: View, urlThumb : String)
+    fun onSelected(view: View, urlThumbRegular : String)
 }

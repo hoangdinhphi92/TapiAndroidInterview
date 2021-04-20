@@ -3,23 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_graph"
-    app:startDestination="@id/resultFragment">
+    app:startDestination="@id/homeFragment">
     <fragment
-        android:id="@+id/resultFragment"
-        android:name="com.tapi.android.example.screens.result.ResultFragment"
-        android:label="ResultFragment" >
+        android:id="@+id/homeFragment"
+        android:name="com.tapi.android.example.screens.home.HomeFragment"
+        android:label="HomeFragment" >
         <action
-            android:id="@+id/action_resultFragment_to_detailFragment"
+            android:id="@+id/action_homeFragment_to_detailFragment"
             app:destination="@id/detailFragment" />
     </fragment>
     <fragment
         android:id="@+id/detailFragment"
         android:name="com.tapi.android.example.screens.detail.DetailFragment"
         android:label="DetailFragment" >
-
         <argument
             android:name="urlThumbs"
             app:argType="string" />
-
     </fragment>
 </navigation>

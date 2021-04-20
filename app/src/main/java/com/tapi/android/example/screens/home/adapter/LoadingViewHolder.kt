@@ -1,4 +1,4 @@
-package com.tapi.android.example.screens.result.adapter
+package com.tapi.android.example.screens.home.adapter
 
 import android.view.LayoutInflater
 import android.view.View

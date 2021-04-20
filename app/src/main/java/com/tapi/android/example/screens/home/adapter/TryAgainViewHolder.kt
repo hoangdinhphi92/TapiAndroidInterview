@@ -1,13 +1,9 @@
-package com.tapi.android.example.screens.result.adapter
+package com.tapi.android.example.screens.home.adapter
 
-import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.tapi.android.example.databinding.ItemLoadMoreBinding
-import com.tapi.android.example.databinding.ItemPhotoBinding
 import com.tapi.android.example.databinding.ItemTryAgainBinding
-import com.tapi.android.example.screens.result.ResultViewModel
+import com.tapi.android.example.screens.home.ResultViewModel
 import com.tapi.android.example.utils.getLayoutInflate
 
 class TryAgainViewHolder(private val viewBinding: ItemTryAgainBinding, private val  viewModel: ResultViewModel) :

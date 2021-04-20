@@ -1,12 +1,11 @@
-package com.tapi.android.example.screens.result.adapter
+package com.tapi.android.example.screens.home.adapter
 
-import android.util.Log
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.tapi.android.example.data.PhotoViewItem
-import com.tapi.android.example.screens.result.ResultViewModel
+import com.tapi.android.example.screens.home.ResultViewModel
 
 const val PHOTO_TYPE = 0
 const val LOAD_MORE_TYPE = 1

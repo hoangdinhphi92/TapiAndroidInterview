@@ -1,12 +1,10 @@
-package com.tapi.android.example.screens.result
+package com.tapi.android.example.screens.home
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.doOnPreDraw
 import androidx.databinding.DataBindingUtil
@@ -17,14 +15,16 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.transition.MaterialElevationScale
 import com.tapi.android.example.R
-import com.tapi.android.example.databinding.FragmentResultBinding
-import com.tapi.android.example.screens.result.adapter.*
+import com.tapi.android.example.databinding.FragmentHomeBinding
+import com.tapi.android.example.screens.home.adapter.*
 import com.tapi.android.example.utils.checkTopScreenWithID
 
-class ResultFragment : Fragment(), OnClickItemListener, View.OnClickListener {
+const val HOME_FRAGMENT_NAME = "Home Fragment"
 
-    private var _binding: FragmentResultBinding? = null
-    private val binding: FragmentResultBinding get() = _binding!!
+class HomeFragment : Fragment(), OnClickItemListener, View.OnClickListener {
+
+    private var _binding: FragmentHomeBinding? = null
+    private val binding: FragmentHomeBinding get() = _binding!!
     private val viewModel: ResultViewModel by viewModels()
 
     private lateinit var adapterGrid: ListPhotoItemAdapter
@@ -33,7 +33,7 @@ class ResultFragment : Fragment(), OnClickItemListener, View.OnClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = DataBindingUtil.inflate(inflater, R.layout.fragment_result, container, false)
+        _binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
         // Inflate the layout for this fragment
         return binding.root
     }
@@ -43,7 +43,6 @@ class ResultFragment : Fragment(), OnClickItemListener, View.OnClickListener {
 
         initToolbar()
 
-        // TODO: Set up postponed enter transition.
         postponeEnterTransition()
         view.doOnPreDraw { startPostponedEnterTransition() }
 
@@ -83,7 +82,7 @@ class ResultFragment : Fragment(), OnClickItemListener, View.OnClickListener {
 
     private fun initToolbar() {
         with(activity as AppCompatActivity) {
-            supportActionBar?.title = "Home Fragment"
+            supportActionBar?.title = HOME_FRAGMENT_NAME
             supportActionBar?.setDisplayHomeAsUpEnabled(false)
             supportActionBar?.setDisplayShowHomeEnabled(false)
         }
@@ -128,7 +127,7 @@ class ResultFragment : Fragment(), OnClickItemListener, View.OnClickListener {
         _binding = null
     }
 
-    override fun onSelected(view: View, urlThumb: String) {
+    override fun onSelected(view: View, urlThumbRegular: String) {
 
         exitTransition = MaterialElevationScale(false).apply {
             duration = 300
@@ -137,9 +136,10 @@ class ResultFragment : Fragment(), OnClickItemListener, View.OnClickListener {
             duration = 300
         }
 
-        val emailCardDetailTransitionName = getString(R.string.detail_transition_name)
-        val extras = FragmentNavigatorExtras(view to emailCardDetailTransitionName)
-        val directions = ResultFragmentDirections.actionResultFragmentToDetailFragment(urlThumb)
+        val detailTransitionName = getString(R.string.detail_transition_name)
+        val extras = FragmentNavigatorExtras(view to detailTransitionName)
+        val directions = HomeFragmentDirections.actionHomeFragmentToDetailFragment(urlThumbRegular)
+
         if (!findNavController().checkTopScreenWithID(R.id.detailFragment)) {
             findNavController().navigate(directions, extras)
         }
