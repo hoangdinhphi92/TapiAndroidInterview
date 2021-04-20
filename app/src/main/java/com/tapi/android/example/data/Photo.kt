@@ -8,7 +8,7 @@ data class Photo(
     val id: String,
     val description: String,
     val urls: PhotoUrls
-)
+): Parcelable
 
 @Parcelize
 data class PhotoUrls(
@@ -17,4 +17,4 @@ data class PhotoUrls(
     val regular: String,
     val small: String,
     val thumb: String
-)
+): Parcelable
