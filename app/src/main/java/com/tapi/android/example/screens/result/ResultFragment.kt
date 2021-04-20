@@ -21,7 +21,7 @@ import com.tapi.android.example.databinding.FragmentResultBinding
 import com.tapi.android.example.screens.result.adapter.*
 import com.tapi.android.example.utils.checkTopScreenWithID
 
-class ResultFragment : Fragment(), OnClickItemListener, View.OnClickListener{
+class ResultFragment : Fragment(), OnClickItemListener, View.OnClickListener {
 
     private var _binding: FragmentResultBinding? = null
     private val binding: FragmentResultBinding get() = _binding!!
@@ -66,30 +66,30 @@ class ResultFragment : Fragment(), OnClickItemListener, View.OnClickListener{
         }
     }
 
-    private fun setViewIdle(){
+    private fun setViewIdle() {
         binding.errorTxt.visibility = View.INVISIBLE
         binding.getDataBtn.visibility = View.INVISIBLE
-        binding.getDataBtn.text = "GET DATA"
+        binding.getDataBtn.text = getString(R.string.get_data)
         binding.listRv.visibility = View.VISIBLE
     }
 
-    private fun setViewError(error: String){
+    private fun setViewError(error: String) {
         binding.errorTxt.visibility = View.VISIBLE
-        binding.getDataBtn.visibility = View.VISIBLE
-        binding.getDataBtn.text = "TRY AGAIN"
         binding.errorTxt.text = error
+        binding.getDataBtn.visibility = View.VISIBLE
+        binding.getDataBtn.text = getString(R.string.try_again)
     }
 
 
-    private fun initToolbar(){
-        with(activity as AppCompatActivity){
+    private fun initToolbar() {
+        with(activity as AppCompatActivity) {
             supportActionBar?.title = "Home Fragment"
             supportActionBar?.setDisplayHomeAsUpEnabled(false)
             supportActionBar?.setDisplayShowHomeEnabled(false)
         }
     }
 
-    private fun initRecyclerView(){
+    private fun initRecyclerView() {
         adapterGrid = ListPhotoItemAdapter(viewModel, this)
         val gridLayoutManager = GridLayoutManager(
             requireContext(), viewModel.columnsCount
@@ -146,7 +146,7 @@ class ResultFragment : Fragment(), OnClickItemListener, View.OnClickListener{
     }
 
     override fun onClick(v: View?) {
-        if(v == binding.getDataBtn) {
+        if (v == binding.getDataBtn) {
             viewModel.getPhoto()
         }
     }

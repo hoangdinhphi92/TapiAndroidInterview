@@ -3,5 +3,8 @@
     <string name="detail_transition_name">detail_fragment</string>
     <string name="photo_item_transition_name">photo_item_$1%s</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="get_data">GET DATA</string>
+    <string name="try_again">TRY AGAIN</string>
+
 </resources>
