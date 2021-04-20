@@ -1,7 +1,6 @@
 package com.tapi.android.example.screens.detail
 
 import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,18 +11,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
-import com.bumptech.glide.request.transition.DrawableCrossFadeFactory
 import com.google.android.material.transition.MaterialContainerTransform
 import com.tapi.android.example.R
 import com.tapi.android.example.databinding.FragmentDetailBinding
-import com.tapi.android.example.utils.loadDetail
 import com.tapi.android.example.utils.loadImageBitmap
 import com.tapi.android.example.utils.themeColor
 
@@ -40,7 +30,6 @@ class DetailFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // TODO: Set up MaterialContainerTransform transition as sharedElementEnterTransition.
         sharedElementEnterTransition = MaterialContainerTransform().apply {
             drawingViewId = R.id.nav_host_fragment
             duration = 300
@@ -61,16 +50,18 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        postponeEnterTransition()
+
         initToolbar()
 
-        parentFragment?.let { binding.pictureImg.loadImageBitmap(it, urlsThumbs) }
+        this.loadImageBitmap(binding.pictureImg, urlsThumbs)
     }
 
     private fun initToolbar() {
         with(activity as AppCompatActivity) {
             supportActionBar?.title = "Detail Fragment"
 
-            val toolbar: Toolbar = requireActivity().findViewById<Toolbar>(R.id.toolbar)
+            val toolbar: Toolbar = requireActivity().findViewById(R.id.toolbar)
 
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
             supportActionBar?.setDisplayShowHomeEnabled(true)

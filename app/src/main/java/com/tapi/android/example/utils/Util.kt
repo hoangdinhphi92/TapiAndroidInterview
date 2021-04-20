@@ -12,24 +12,23 @@ import android.view.View
 import android.widget.ImageView
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.res.use
-import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
+import com.tapi.android.example.R
 
 class Util {
     companion object {
         val BASE_API_URL = "https://api.unsplash.com/photos/"
         val APPLICATION_ID = "cKakzKM1cx44BUYBnEIrrgN_gnGqt81UcE7GstJEils"
     }
-
 }
 
 @ColorInt
@@ -44,6 +43,10 @@ fun Context.themeColor(
     }
 }
 
+fun NavController.checkTopScreenWithID(id: Int): Boolean {
+    return this.currentBackStackEntry?.destination?.id == id
+}
+
 fun View.getLayoutInflate(): LayoutInflater {
     return LayoutInflater.from(context)
 }
@@ -55,22 +58,15 @@ fun ImageView.load(imageUrl: String?) {
     }
 }
 
-fun ImageView.loadDetail(imageUrl: String?) {
-    if (imageUrl != null) {
-        val imgUri =
-            imageUrl.toUri().buildUpon().scheme("https").build()
-        val requestOptions = RequestOptions().centerInside()
-        Glide.with(context).load(imgUri).apply(requestOptions).into(this)
-    }
-}
-
-fun ImageView.loadImageBitmap(parentFragment: Fragment, urlThumbnail: String?) {
+fun Fragment.loadImageBitmap(imageView: AppCompatImageView, urlThumbnail: String?) {
     if (urlThumbnail != null) {
-        val imgUri =
-            urlThumbnail.toUri().buildUpon().scheme("https").build()
 
-        Glide.with(context).load(imgUri)
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
+        val requestOptions = RequestOptions.placeholderOf(R.color.white)
+            .dontTransform()
+
+        Glide.with(this)
+            .load(urlThumbnail)
+            .apply(requestOptions)
             .listener(object : RequestListener<Drawable?> {
                 override fun onLoadFailed(
                     e: GlideException?,
@@ -78,7 +74,7 @@ fun ImageView.loadImageBitmap(parentFragment: Fragment, urlThumbnail: String?) {
                     target: Target<Drawable?>?,
                     isFirstResource: Boolean
                 ): Boolean {
-                    parentFragment.startPostponedEnterTransition()
+                    startPostponedEnterTransition()
                     return false
                 }
 
@@ -89,19 +85,19 @@ fun ImageView.loadImageBitmap(parentFragment: Fragment, urlThumbnail: String?) {
                     dataSource: DataSource?,
                     isFirstResource: Boolean
                 ): Boolean {
-                    parentFragment.startPostponedEnterTransition()
+                    startPostponedEnterTransition()
                     return false
                 }
 
-            }).centerInside().into(this)
+            }).into(imageView)
     }
 }
 
-fun calculateNoOfColumns(
-    context: Context, columnWidthDp: Float): Int {
+fun calculateNoColumn(
+    context: Context, columnDp: Float): Int {
     val displayMetrics = context.resources.displayMetrics
-    val screenWidthDp = displayMetrics.widthPixels / displayMetrics.density
-    return (screenWidthDp / columnWidthDp + 0.5).toInt()
+    val screenDp = displayMetrics.widthPixels / displayMetrics.density
+    return (screenDp / columnDp + 0.5).toInt()
 }
 
 fun Context.isInternetAvailable(): Boolean {
@@ -132,7 +128,4 @@ fun Context.isInternetAvailable(): Boolean {
     return result
 }
 
-fun NavController.checkTopScreenWithID(id: Int): Boolean {
-    return this.currentBackStackEntry?.destination?.id == id
-}
 

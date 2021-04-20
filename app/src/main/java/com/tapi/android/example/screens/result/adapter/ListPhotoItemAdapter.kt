@@ -62,7 +62,6 @@ class ListPhotoItemAdapter(private val viewModel : ResultViewModel, private val 
         } else {
             val state = payloads.firstOrNull() as? Int
             if (state == UPDATE_PICTURE) {
-                Log.e("MTHAI", "onBindViewHolder: ", )
                 (holder as PhotoViewHolder).updatePicture(getItem(position) as PhotoViewItem.PhotoItem)
             }
         }
@@ -84,10 +83,8 @@ class PhotoDiffUtil: DiffUtil.ItemCallback<PhotoViewItem>() {
 
     override fun getChangePayload(oldItem: PhotoViewItem, newItem: PhotoViewItem): Any? {
         if (oldItem is PhotoViewItem.PhotoItem && newItem is PhotoViewItem.PhotoItem) {
-            Log.e("MTHAI", "getChangePayload: 1")
                 return UPDATE_PICTURE
         }
-        Log.e("MTHAI", "getChangePayload: 2" )
         return null
     }
 }

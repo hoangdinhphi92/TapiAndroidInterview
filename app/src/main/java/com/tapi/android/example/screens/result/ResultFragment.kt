@@ -19,6 +19,7 @@ import com.google.android.material.transition.MaterialElevationScale
 import com.tapi.android.example.R
 import com.tapi.android.example.databinding.FragmentResultBinding
 import com.tapi.android.example.screens.result.adapter.*
+import com.tapi.android.example.utils.checkTopScreenWithID
 
 class ResultFragment : Fragment(), OnClickItemListener, View.OnClickListener{
 
@@ -139,7 +140,9 @@ class ResultFragment : Fragment(), OnClickItemListener, View.OnClickListener{
         val emailCardDetailTransitionName = getString(R.string.detail_transition_name)
         val extras = FragmentNavigatorExtras(view to emailCardDetailTransitionName)
         val directions = ResultFragmentDirections.actionResultFragmentToDetailFragment(urlThumb)
-        findNavController().navigate(directions, extras)
+        if (!findNavController().checkTopScreenWithID(R.id.detailFragment)) {
+            findNavController().navigate(directions, extras)
+        }
     }
 
     override fun onClick(v: View?) {

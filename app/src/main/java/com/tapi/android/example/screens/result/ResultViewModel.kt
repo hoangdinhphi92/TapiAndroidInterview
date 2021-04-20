@@ -1,13 +1,12 @@
 package com.tapi.android.example.screens.result
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.tapi.android.example.data.PhotoViewItem
 import com.tapi.android.example.service.RetrofitClient
-import com.tapi.android.example.utils.calculateNoOfColumns
+import com.tapi.android.example.utils.calculateNoColumn
 import com.tapi.android.example.utils.isInternetAvailable
 import kotlinx.coroutines.*
 
@@ -29,7 +28,7 @@ class ResultViewModel(val app: Application) : AndroidViewModel(app) {
     private var _page = 1
 
     init {
-        columnsCount = calculateNoOfColumns(app, 120f)
+        columnsCount = calculateNoColumn(app, 120f)
     }
 
     fun getPhoto() {
