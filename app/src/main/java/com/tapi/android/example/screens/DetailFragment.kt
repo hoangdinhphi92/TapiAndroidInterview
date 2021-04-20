@@ -49,6 +49,7 @@ class DetailFragment : Fragment() {
                     target: Target<Drawable>?,
                     isFirstResource: Boolean
                 ): Boolean {
+                    initToolbar()
                     startPostponedEnterTransition()
                     return false
                 }

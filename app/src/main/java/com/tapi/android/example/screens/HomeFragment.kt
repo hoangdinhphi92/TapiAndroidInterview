@@ -3,6 +3,7 @@ package com.tapi.android.example.screens
 import android.os.Build
 import android.os.Bundle
 import android.transition.Fade
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,16 +38,22 @@ class HomeFragment : Fragment(), View.OnClickListener {
 
     private val photoItemListener = object : PhotoItemListener {
         override fun onClickedPhotoItem(photoViewItem: PhotoViewItem, imageView: View) {
-            val extras =
-                FragmentNavigatorExtras(imageView to getString(R.string.detail_transition_name))
-            val action =
-                HomeFragmentDirections.actionHomeFragmentToDetailFragment(
-                    photoViewItem.photo.urls.regular
+            try {
+                val extras =
+                    FragmentNavigatorExtras(imageView to getString(R.string.detail_transition_name))
+                val action =
+                    HomeFragmentDirections.actionHomeFragmentToDetailFragment(
+                        photoViewItem.photo.urls.regular
+                    )
+                findNavController().navigate(
+                    action,
+                    extras
                 )
-            findNavController().navigate(
-                action,
-                extras
-            )
+            } catch (e: Exception) {
+                Log.d("abba", "error: ${e.message}")
+                e.printStackTrace()
+            }
+
         }
 
     }
@@ -90,7 +97,7 @@ class HomeFragment : Fragment(), View.OnClickListener {
         _binding = null
     }
 
-    private fun initSharedElement(){
+    private fun initSharedElement() {
         exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false).apply {
             duration = 300
         }
@@ -166,7 +173,7 @@ class HomeFragment : Fragment(), View.OnClickListener {
         }
 
         layoutManager = gridLayoutManager
-
+        setHasFixedSize(true)
         addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
