@@ -30,7 +30,8 @@ class DetailFragment: Fragment() {
         sharedElementEnterTransition = MaterialContainerTransform().apply {
             drawingViewId = R.id.nav_host_fragment
             duration = 350
-            containerColor = Color.TRANSPARENT
+            scrimColor = Color.TRANSPARENT
+            setAllContainerColors(Color.WHITE)
         }
     }
 
