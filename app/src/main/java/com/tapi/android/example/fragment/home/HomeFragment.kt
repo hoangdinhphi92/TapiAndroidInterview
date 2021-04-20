@@ -12,7 +12,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.transition.MaterialElevationScale
 import com.tapi.android.example.R
 import com.tapi.android.example.calculateNoOfColumns
 import com.tapi.android.example.databinding.HomeFragmentBinding
@@ -119,23 +118,17 @@ class HomeFragment : Fragment() {
 
     private fun onClickItemPhotoListener(imageView: View, url: String) {
         val extras = FragmentNavigatorExtras(imageView to imageView.transitionName)
-
-        exitTransition = MaterialElevationScale(false).apply {
-            duration = 200
-        }
-        returnTransition = MaterialElevationScale(true).apply {
-            duration = 200
-        }
-
         val bundle = Bundle()
         bundle.putString("key_url", url)
-        startPostponedEnterTransition()
-        findNavController().navigate(
-            R.id.action_homeFragment_to_previewFragment,
-            bundle,
-            null,
-            extras
-        )
+        val findNavController = findNavController()
+        if (findNavController.previousBackStackEntry == null) {
+            findNavController.navigate(
+                R.id.action_homeFragment_to_previewFragment,
+                bundle,
+                null,
+                extras
+            )
+        }
     }
 
     private fun onClickReload() {

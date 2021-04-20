@@ -61,24 +61,27 @@ class HomeViewModel : ViewModel() {
             if (_listData.value.isNullOrEmpty()) {
                 _state.value = State.SUCCESS
             }
-            var listFind =
-                _listData.value?.filter { it !is UnSplashItem.LoadingItem }?.toMutableList()
-            if (listFind == null) listFind = mutableListOf()
-            listFind.addAll(queryPhotos)
-            listFind.add(UnSplashItem.LoadingItem(true))
-            _listData.value = listFind.toList()
+            _listData.value = removeAndUpdateItemLoading(queryPhotos, true)
             page++
         } else {
             if (_listData.value.isNullOrEmpty()) {
                 _state.value = State.FAIL
             } else {
-                var listFind =
-                    _listData.value?.filter { it !is UnSplashItem.LoadingItem }?.toMutableList()
-                if (listFind == null) listFind = mutableListOf()
-                listFind.add(UnSplashItem.LoadingItem(false))
-                _listData.value = listFind.toList()
+                _listData.value = removeAndUpdateItemLoading(isLoading = false)
             }
         }
+    }
+
+    private fun removeAndUpdateItemLoading(
+        listQuery: List<UnSplashItem.Photo>? = null,
+        isLoading: Boolean
+    ): List<UnSplashItem> {
+        var listFind =
+            _listData.value?.filter { it !is UnSplashItem.LoadingItem }?.toMutableList()
+        if (listFind == null) listFind = mutableListOf()
+        listQuery?.let { listFind.addAll(it) }
+        listFind.add(UnSplashItem.LoadingItem(isLoading))
+        return listFind.toList()
     }
 
     fun isLoadMoreItem(index: Int): Boolean {
