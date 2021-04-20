@@ -1,20 +1,21 @@
 package com.tapi.android.example.fragment
 
 import android.os.Bundle
+import android.transition.TransitionSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.Toast
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.TransitionInflater
 import com.tapi.android.example.R
 import com.tapi.android.example.Utils
 import com.tapi.android.example.data.Photo
@@ -27,12 +28,16 @@ class HomeFragment : Fragment(), AdapterPhotos.OnClickImage {
     private var adapter: AdapterPhotos? = null
     private var _binding: HomeFragmentLayoutBinding? = null
     private val binding get() = _binding!!
-    private var viewModel: HomeViewModel? = null
+    private val viewModel: HomeViewModel by navGraphViewModels(R.id.main_graph)
 
     private val obListPhoto = Observer<List<Photo>> {
         binding.progressBar.visibility = View.INVISIBLE
         adapter?.submitList(it)
+        binding.recyclerViewPhoto.doOnPreDraw {
+            startPostponedEnterTransition()
+        }
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,11 +45,15 @@ class HomeFragment : Fragment(), AdapterPhotos.OnClickImage {
         savedInstanceState: Bundle?
     ): View {
         _binding = HomeFragmentLayoutBinding.inflate(inflater, container, false)
-        viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
+
+        reenterTransition = TransitionInflater.from(context).inflateTransition(
+            android.R.transition.move
+        )
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        postponeEnterTransition()
         binding.progressBar.visibility = View.VISIBLE
         checkViewInternetCollection()
         binding.tryAgainBtn.setOnClickListener {
@@ -56,10 +65,10 @@ class HomeFragment : Fragment(), AdapterPhotos.OnClickImage {
     private fun initView() {
         binding.progressBar.visibility = View.INVISIBLE
         hideErrorInternet()
-        viewModel?.getListPhotos()?.observe(viewLifecycleOwner, obListPhoto)
+        viewModel.getListPhotos().observe(viewLifecycleOwner, obListPhoto)
         caculatorPerPage()
         setupRecyclerView()
-        viewModel?.nextPage()
+        viewModel.nextPage()
     }
 
     private fun hideErrorInternet() {
@@ -83,7 +92,7 @@ class HomeFragment : Fragment(), AdapterPhotos.OnClickImage {
             val numberRow = heightScreen / itemWidth
             perPage = (numberRow * 3).roundToInt()
         }
-        viewModel?.setPerPage(perPage)
+        viewModel.setPerPage(perPage)
     }
 
     private fun setupRecyclerView() {
@@ -110,11 +119,11 @@ class HomeFragment : Fragment(), AdapterPhotos.OnClickImage {
                         adapter?.let {
                             val size = it.currentList.size
                             if (it.currentList[size - 1].id != ID_ERROR_LOADMORE) {
-                                viewModel?.nextPage()
+                                viewModel.nextPage()
                             }
                         }
                     } else {
-                        viewModel?.addNoInternetHollder()
+                        viewModel.addNoInternetHollder()
                     }
                 }
             }
@@ -126,14 +135,15 @@ class HomeFragment : Fragment(), AdapterPhotos.OnClickImage {
             3
         )
         binding.recyclerViewPhoto.addItemDecoration(dividerItemDecoration)
+
     }
 
     private fun nextPage() {
         val connectionType = Utils.getConnectionType(requireContext())
         if (connectionType > 0) {
-            viewModel?.nextPage()
+            viewModel.nextPage()
         } else {
-            viewModel?.addNoInternetHollder()
+            viewModel.addNoInternetHollder()
         }
     }
 
@@ -151,18 +161,16 @@ class HomeFragment : Fragment(), AdapterPhotos.OnClickImage {
         _binding = null
     }
 
-    override fun clickImage(photo: Photo,image : ImageView) {
+    override fun clickImage(photo: Photo, view: View, imageView: ImageView, currentPosition: Int) {
         if (photo.id != null && photo.id != ID_ERROR_LOADMORE && photo.id != ID_HOLDER_IMAGE) {
-//            val extras = FragmentNavigatorExtras(
-//                imageView to item.id
-//            )
-//            val action = RecyclerViewFragmentDirections.navToItemDetailFragment(id = item.id)
-//            findNavController().navigate(action, extras)
+            this@HomeFragment.parentFragmentManager.beginTransaction().setReorderingAllowed(true).commit()
             val extras = FragmentNavigatorExtras(
-                image to photo.id
+                view to photo.id
             )
-            val actionHomeFragmentToDetailFragment = HomeFragmentDirections.actionHomeFragmentToDetailFragment(photo.urls?.full,photo.id)
-            findNavController().navigate(actionHomeFragmentToDetailFragment,extras)
+            val actionHomeFragmentToDetailFragment = HomeFragmentDirections.actionHomeFragmentToDetailFragment(
+                photo.id, photo.urls?.regular
+            )
+            findNavController().navigate(actionHomeFragmentToDetailFragment, extras)
         }
     }
 

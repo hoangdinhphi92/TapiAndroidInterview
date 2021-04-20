@@ -101,7 +101,7 @@ class AdapterPhotos(val context: Context, val itemClickListener: OnClickImage) :
                 bind.itemPhotoImg.setImageResource(R.color.gray)
             } else {
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                    bind.itemPhotoImg.transitionName = context.resources.getString(R.string.detail_transition_name)
+                    bind.rootItem.transitionName = photo.id
                 }
                 Glide.with(context)
                     .load(photo.urls.thumb)
@@ -112,7 +112,7 @@ class AdapterPhotos(val context: Context, val itemClickListener: OnClickImage) :
             }
 
             binding.itemPhotoImg.setOnClickListener {
-                itemClickListener.clickImage(getItem(adapterPosition),bind.itemPhotoImg)
+                itemClickListener.clickImage(getItem(adapterPosition),bind.rootItem,bind.itemPhotoImg,adapterPosition)
             }
         }
     }
@@ -125,7 +125,7 @@ class AdapterPhotos(val context: Context, val itemClickListener: OnClickImage) :
     }
 
     interface OnClickImage {
-        fun clickImage(photo: Photo,image : ImageView)
+        fun clickImage(photo: Photo,view: View,imageView: ImageView,position: Int)
         fun clickTryAgainBtn()
     }
 }

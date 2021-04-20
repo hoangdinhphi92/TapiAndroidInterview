@@ -16,10 +16,10 @@
         android:id="@+id/detailFragment"
         android:name="com.tapi.android.example.fragment.DetailFragment"
         android:label="DetailFragment" >
-        <argument android:name="img_url"
+        <argument android:name="id"
             app:argType="string"
             app:nullable="true" />
-        <argument android:name="id"
+        <argument android:name="url"
             app:argType="string"
             app:nullable="true" />
     </fragment>
