@@ -2,11 +2,12 @@ package com.tapi.android.example.screens
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
+import android.transition.Fade
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -14,6 +15,10 @@ import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.transition.FadeThroughProvider
+import com.google.android.material.transition.Hold
+import com.google.android.material.transition.MaterialElevationScale
+import com.google.android.material.transition.MaterialSharedAxis
 import com.tapi.android.example.R
 import com.tapi.android.example.adapter.PhotoItemAdapter
 import com.tapi.android.example.data.LoadingState
@@ -31,14 +36,12 @@ class HomeFragment : Fragment(), View.OnClickListener {
     private val binding get() = _binding!!
 
     private val photoItemListener = object : PhotoItemListener {
-        @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
         override fun onClickedPhotoItem(photoViewItem: PhotoViewItem, imageView: View) {
             val extras =
-                FragmentNavigatorExtras(imageView to imageView.transitionName)
+                FragmentNavigatorExtras(imageView to getString(R.string.detail_transition_name))
             val action =
                 HomeFragmentDirections.actionHomeFragmentToDetailFragment(
-                    photoViewItem.photo.urls.regular,
-                    imageView.transitionName
+                    photoViewItem.photo.urls.regular
                 )
             findNavController().navigate(
                 action,
@@ -63,11 +66,19 @@ class HomeFragment : Fragment(), View.OnClickListener {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        initToolbar()
+        initSharedElement()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        postponeEnterTransition()
+
+        view.doOnPreDraw {
+            startPostponedEnterTransition()
+        }
+
         bindEvent()
         initRecyclerview()
         viewModel.queryPhotos()
@@ -77,6 +88,15 @@ class HomeFragment : Fragment(), View.OnClickListener {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun initSharedElement(){
+        exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false).apply {
+            duration = 300
+        }
+        reenterTransition = MaterialElevationScale(true).apply {
+            duration = 300
+        }
     }
 
     private fun bindEvent() {
@@ -113,13 +133,25 @@ class HomeFragment : Fragment(), View.OnClickListener {
 
     }
 
+    private fun initToolbar() {
+        (requireActivity() as AppCompatActivity).supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(false)
+            setDisplayShowHomeEnabled(false)
+            title = getString(R.string.home_fragment)
+        }
+    }
+
     private fun initRecyclerview() = with(binding.rvPhoto) {
         val spanCount = 3
         val rvPadding = resources.getDimension(R.dimen.rv_padding)
         val itemSize = (resources.displayMetrics.widthPixels - rvPadding) / spanCount
 
         this@HomeFragment.adapter =
-            PhotoItemAdapter(itemSize.toInt(), this@HomeFragment.photoItemListener, this@HomeFragment.loadingItemListener)
+            PhotoItemAdapter(
+                itemSize.toInt(),
+                this@HomeFragment.photoItemListener,
+                this@HomeFragment.loadingItemListener
+            )
         adapter = this@HomeFragment.adapter
 
         val gridLayoutManager = GridLayoutManager(requireContext(), spanCount)
@@ -139,7 +171,7 @@ class HomeFragment : Fragment(), View.OnClickListener {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 val lastVisibleItem = gridLayoutManager.findLastVisibleItemPosition()
-                if (recyclerView.childCount - lastVisibleItem < 4) {
+                if (recyclerView.childCount - lastVisibleItem < 3) {
                     viewModel.queryPhotos()
                 }
             }

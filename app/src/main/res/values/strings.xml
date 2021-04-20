@@ -5,4 +5,6 @@
     <string name="error_load">Error Load</string>
     <string name="error_load_more">Error Load More</string>
     <string name="try_again">TRY AGAIN</string>
+    <string name="home_fragment">Home Fragment</string>
+    <string name="detail_fragment">Detail Fragment</string>
 </resources>

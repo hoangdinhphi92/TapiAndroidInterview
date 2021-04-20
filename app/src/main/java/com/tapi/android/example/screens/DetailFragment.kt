@@ -3,13 +3,14 @@ package com.tapi.android.example.screens
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.transition.Transition
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.transition.TransitionInflater
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -27,15 +28,7 @@ class DetailFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-/*         sharedElementEnterTransition = MaterialContainerTransform().apply {
-             drawingViewId = R.id.nav_host_fragment
-             duration = 300
-             scrimColor = Color.TRANSPARENT
-             setAllContainerColors(Color.WHITE)
-         }*/
-
-        sharedElementEnterTransition =
-            TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.move)
+        initSharedElement()
     }
 
     override fun onCreateView(
@@ -44,9 +37,6 @@ class DetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentDetailBinding.inflate(inflater, container, false)
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            binding.ivPhotoFull.transitionName = safeArgs.transitionName
-        }
 
         postponeEnterTransition()
 
@@ -70,6 +60,7 @@ class DetailFragment : Fragment() {
                     dataSource: DataSource?,
                     isFirstResource: Boolean
                 ): Boolean {
+                    initToolbar()
                     startPostponedEnterTransition()
                     return false
                 }
@@ -79,8 +70,28 @@ class DetailFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    private fun initToolbar() {
+        (requireActivity() as AppCompatActivity).supportActionBar?.apply{
+            setDisplayHomeAsUpEnabled(true)
+            setDisplayShowHomeEnabled(true)
+            title = getString(R.string.detail_fragment)
+        }
+
+        val toolbar = (requireActivity() as AppCompatActivity).findViewById<Toolbar>(R.id.toolbar)
+        toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+
+    }
+
+    private fun initSharedElement(){
+        val transition = MaterialContainerTransform().apply {
+            drawingViewId = R.id.nav_host_fragment
+            duration = 300
+            scrimColor = Color.TRANSPARENT
+            setAllContainerColors(Color.WHITE)
+        }
+        sharedElementEnterTransition = transition
     }
 
     override fun onDestroyView() {

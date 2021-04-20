@@ -47,8 +47,8 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_photo"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:clipToPadding="false"
         android:padding="@dimen/rv_padding"
         android:paddingBottom="80dp"

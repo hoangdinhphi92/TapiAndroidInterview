@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitBuilder {
     private const val BASE_URL = "https://api.unsplash.com/"
-    private const val CLIENT_ID ="HhcTn-IhaEPDgYQ9IDwtg5DVPZGFJTos7vS1twuoTnQ"
+    private const val CLIENT_ID ="6fa91622109e859b1c40218a5dead99f7262cf4f698b1e2cb89dd18fc5824d15"
     private fun getRetrofit(): Retrofit {
         val client = OkHttpClient.Builder()
             .addInterceptor(HeaderInterceptor(CLIENT_ID))
