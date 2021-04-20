@@ -3,10 +3,10 @@ package com.tapi.android.example.functions.home.adapter.holders
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.tapi.android.example.util.Utils.Companion.loadImageHolder
 import com.tapi.android.example.data.PhotoItemView
 import com.tapi.android.example.databinding.ItemPhotoBinding
 import com.tapi.android.example.event.OnActionCallBack
+import com.tapi.android.example.util.Utils.Companion.loadImageHolder
 
 class ItemHolder(
     private val binding: ItemPhotoBinding,

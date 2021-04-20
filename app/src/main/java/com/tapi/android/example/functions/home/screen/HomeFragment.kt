@@ -76,6 +76,12 @@ class HomeFragment : BaseFragment(), OnActionCallBack, OnCallBackToFragment {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         registerReceiverNetwork()
+        setToolbar()
+
+    }
+
+    private fun setToolbar() {
+
     }
 
     override fun onCreateView(
@@ -169,6 +175,7 @@ class HomeFragment : BaseFragment(), OnActionCallBack, OnCallBackToFragment {
     }
 
     private fun setViewIsNotEmptyList() {
+
         binding.pgMain.visibility = View.INVISIBLE
         binding.errTv.visibility = View.INVISIBLE
         binding.loadTv.apply {
@@ -198,7 +205,11 @@ class HomeFragment : BaseFragment(), OnActionCallBack, OnCallBackToFragment {
                 if (Utils.isNetworkConnected(requireContext())) {
                     if (curTmp == -1) {
                         setViewIsNotEmptyList()
-                        mainModel.queryPhotos(requireContext())
+                        binding.pgMain.visibility = View.VISIBLE
+                        val rs = mainModel.queryPhotos(requireContext())
+                        if (rs) {
+                            binding.pgMain.visibility = View.GONE
+                        }
                     }
                 } else {
                     if (curTmp == -1) {
@@ -215,6 +226,7 @@ class HomeFragment : BaseFragment(), OnActionCallBack, OnCallBackToFragment {
         requireActivity().registerReceiver(
             networkChangeReceiver,
             IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+
         )
     }
 
@@ -236,14 +248,16 @@ class HomeFragment : BaseFragment(), OnActionCallBack, OnCallBackToFragment {
         val action = HomeFragmentDirections.actionMainFragmentToDetailFragment(url)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             exitTransition = MaterialElevationScale(false).apply {
-                duration = 200
+
+                duration = 300
             }
-            returnTransition = MaterialElevationScale(true).apply {
-                duration = 200
+            reenterTransition = MaterialElevationScale(true).apply {
+                duration = 300
             }
 
-            val shareElementName = getString(R.string.detail_transition_name)
-            val extras = FragmentNavigatorExtras(view to shareElementName)
+
+            val tsn = getString(R.string.detail_transition_name)
+            val extras = FragmentNavigatorExtras(view to tsn)
             findNavController().navigate(action, extras)
         } else {
             findNavController().navigate(action)

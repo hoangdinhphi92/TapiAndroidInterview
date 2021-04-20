@@ -5,6 +5,7 @@ import android.net.ConnectivityManager
 import android.view.View
 import android.widget.ImageView
 import com.bumptech.glide.Glide
+import com.tapi.android.example.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -28,7 +29,8 @@ class Utils {
 
         fun View.loadImageHolder(url: String) {
 
-            Glide.with(this.context).load(url).centerCrop().dontAnimate()
+            Glide.with(this.context).load(url).placeholder(R.drawable.photo_placeholder)
+                .error(R.drawable.photo_placeholder).centerCrop().dontAnimate()
                 .into(this as ImageView)
         }
 

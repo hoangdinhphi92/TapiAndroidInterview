@@ -6,11 +6,11 @@
         android:id="@+id/ct_detail"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:transitionName="@string/detail_transition_name"
         app:layoutDescription="@xml/fragment_detail_xml_ct_detail_scene">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/iv_img"
+            android:transitionName="@string/detail_transition_name"
             android:scaleType="centerCrop"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

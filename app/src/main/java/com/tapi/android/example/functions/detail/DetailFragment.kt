@@ -1,15 +1,22 @@
 package com.tapi.android.example.functions.detail
 
-import android.content.Context
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.annotation.RequiresApi
+import androidx.core.view.doOnPreDraw
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.google.android.material.transition.platform.MaterialContainerTransform
 import com.tapi.android.example.R
 import com.tapi.android.example.databinding.FragmentDetailBinding
@@ -17,7 +24,6 @@ import com.tapi.android.example.event.OnCallBackToFragment
 import com.tapi.android.example.functions.bases.BaseFragment
 import com.tapi.android.example.themeColor
 import com.tapi.android.example.util.Constance
-import com.tapi.android.example.util.Utils.Companion.loadImageHolder
 
 
 class DetailFragment : BaseFragment(), OnCallBackToFragment {
@@ -31,6 +37,7 @@ class DetailFragment : BaseFragment(), OnCallBackToFragment {
         super.onCreate(savedInstanceState)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             sharedElementEnterTransition = buildContainerTransform()
+            sharedElementReturnTransition = buildContainerTransform()
         }
     }
 
@@ -40,9 +47,10 @@ class DetailFragment : BaseFragment(), OnCallBackToFragment {
             .apply {
                 drawingViewId = R.id.my_nav
                 scrimColor = Color.TRANSPARENT
-                duration = 200
+                duration = 300
                 setAllContainerColors(requireContext().themeColor(R.attr.colorSurface))
             }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,15 +72,35 @@ class DetailFragment : BaseFragment(), OnCallBackToFragment {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        postponeEnterTransition()
+        view.doOnPreDraw {
+            Glide.with(requireContext()).load(args.url).centerCrop()
+                .error(R.drawable.photo_placeholder).listener(object :
+                    RequestListener<Drawable> {
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        return false
+                    }
 
-        binding.ivImg.loadImageHolder(args.url)
+                    override fun onResourceReady(
+                        resource: Drawable?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        dataSource: DataSource?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        startPostponedEnterTransition()
+                        return false
+                    }
 
+                })
+                .into(binding.ivImg as ImageView)
+        }
 
-    }
-
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
 
     }
 
