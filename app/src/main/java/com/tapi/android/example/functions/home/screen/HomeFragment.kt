@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -76,13 +77,10 @@ class HomeFragment : BaseFragment(), OnActionCallBack, OnCallBackToFragment {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         registerReceiverNetwork()
-        setToolbar()
 
     }
 
-    private fun setToolbar() {
 
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -247,7 +245,7 @@ class HomeFragment : BaseFragment(), OnActionCallBack, OnCallBackToFragment {
         sendAction(Constance.ACTION_CLICK_PHOTO)
         val action = HomeFragmentDirections.actionMainFragmentToDetailFragment(url)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            exitTransition = MaterialElevationScale(false).apply {
+            exitTransition = MaterialElevationScale(true).apply {
 
                 duration = 300
             }
