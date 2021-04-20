@@ -4,10 +4,12 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.tapi.android.example.R
 import com.tapi.android.example.data.PhotoViewItem
 import com.tapi.android.example.databinding.ItemPhotoBinding
 import com.tapi.android.example.utils.getLayoutInflate
 import com.tapi.android.example.utils.load
+import java.util.*
 
 class PhotoViewHolder(
     private val viewBinding: ItemPhotoBinding,
@@ -34,7 +36,7 @@ class PhotoViewHolder(
         viewBinding.photoImg.setOnClickListener {
             val item = photoViewItem
             if (item != null) {
-                Log.e("MTHAI", "initOnclick: ${item.photo.id}" )
+                Log.e("MTHAI", "initOnclick: ${String.format(Locale.ENGLISH, "photo_item_\$1%s", item.photo.id)} --- ${item.photo.urls.regular}" )
                 listener.onSelected(it, item.photo.urls.regular)
             }
         }
