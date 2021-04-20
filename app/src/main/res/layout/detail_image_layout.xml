@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:background="@color/black"
+        android:background="@color/white"
         android:layout_height="match_parent">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/detai_img"
             android:layout_width="0dp"
             android:layout_height="0dp"

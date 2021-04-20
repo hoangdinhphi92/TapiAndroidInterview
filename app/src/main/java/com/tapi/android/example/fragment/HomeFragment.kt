@@ -163,7 +163,6 @@ class HomeFragment : Fragment(), AdapterPhotos.OnClickImage {
 
     override fun clickImage(photo: Photo, view: View, imageView: ImageView, currentPosition: Int) {
         if (photo.id != null && photo.id != ID_ERROR_LOADMORE && photo.id != ID_HOLDER_IMAGE) {
-            this@HomeFragment.parentFragmentManager.beginTransaction().setReorderingAllowed(true).commit()
             val extras = FragmentNavigatorExtras(
                 view to photo.id
             )

@@ -1,5 +1,6 @@
 package com.tapi.android.example.fragment
 
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,6 +15,7 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.google.android.material.transition.MaterialContainerTransform
 import com.tapi.android.example.R
 import com.tapi.android.example.databinding.DetailImageLayoutBinding
 import com.tapi.android.example.fragment.adapter.HomeViewModel
@@ -35,12 +37,10 @@ class DetailFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(
-                android.R.transition.move
-            )
-            exitTransition = TransitionInflater.from(context).inflateTransition(
-                android.R.transition.move
-            )
+            sharedElementEnterTransition = MaterialContainerTransform().apply {
+                drawingViewId = R.id.nav_host_fragment
+                duration = 300
+            }
         }
     }
 
@@ -50,7 +50,7 @@ class DetailFragment : Fragment() {
         val id = args.id
         val url = args.url
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            binding.detaiImg.transitionName = id
+            binding.root.transitionName = id
         }
         if (!id.isNullOrEmpty()){
 //            binding.detaiImg.setImageBitmap(res)
