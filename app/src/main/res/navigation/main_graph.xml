@@ -19,8 +19,8 @@
         <argument android:name="id"
             app:argType="string"
             app:nullable="true" />
-        <argument android:name="url"
-            app:argType="string"
+        <argument android:name="photo"
+            app:argType="com.tapi.android.example.data.Photo"
             app:nullable="true" />
     </fragment>
 </navigation>

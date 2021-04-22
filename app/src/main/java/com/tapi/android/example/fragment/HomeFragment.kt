@@ -118,8 +118,10 @@ class HomeFragment : Fragment(), AdapterPhotos.OnClickImage {
                     if (connectionType > 0) {
                         adapter?.let {
                             val size = it.currentList.size
-                            if (it.currentList[size - 1].id != ID_ERROR_LOADMORE) {
-                                viewModel.nextPage()
+                            if (size > 0) {
+                                if (it.currentList[size - 1].id != ID_ERROR_LOADMORE) {
+                                    viewModel.nextPage()
+                                }
                             }
                         }
                     } else {
@@ -166,9 +168,10 @@ class HomeFragment : Fragment(), AdapterPhotos.OnClickImage {
             val extras = FragmentNavigatorExtras(
                 view to photo.id
             )
-            val actionHomeFragmentToDetailFragment = HomeFragmentDirections.actionHomeFragmentToDetailFragment(
-                photo.id, photo.urls?.regular
-            )
+            val actionHomeFragmentToDetailFragment =
+                HomeFragmentDirections.actionHomeFragmentToDetailFragment(
+                    photo.id, photo
+                )
             findNavController().navigate(actionHomeFragmentToDetailFragment, extras)
         }
     }
